@@ -16,19 +16,30 @@ module ModMul (
   input clk, reset;
   input [FIELD_WIDTH:0] a, b, m;
   input [FIELD_WIDTH-1:0] s;
-  output [FIELD_WIDTH-1:0] r;
+  output reg [FIELD_WIDTH-1:0] r;
 
-  reg [2*FIELD_WIDTH-1:0] ab;   // Full
-  wire ab1, ab2;      // MSB, LSB
+  reg [2*FIELD_WIDTH-1:0] ab;                   // Full
+  reg [3*FIELD_WIDTH:0] l1_full;  // TODO: Check if you can't do [3*FIELD_WIDTH:2*FIELD_WIDTH] and avoid intermediary wires
+  reg [FIELD_WIDTH+1:0] l1_s_lsb;
+  
+  wire [FIELD_WIDTH+1:0] ab_msb;    // MSB
+  wire [FIELD_WIDTH+1:0] ab_lsb;    // LSB
+  wire [FIELD_WIDTH+1:0] l1_msb;
 
-  assign ab1 = ab[2*FIELD_WIDTH-1:FIELD_WIDTH];
-  assign ab2 = ab[FIELD_WIDTH+1:0]; 
+  assign ab_msb = ab[2*FIELD_WIDTH-1:FIELD_WIDTH];
+  assign ab_lsb = ab[FIELD_WIDTH+1:0]; 
+  assign l1_msb = l1_full[2*FIELD_WIDTH:FIELD_WIDTH];
 
   always @(posedge clk) begin
     if (reset) begin
       ab <= 0;
+      l1_full <= 0;
+      l1_s_lsb <= 0;
     end else begin
       ab = a * b;
+      l1_full = ab_msb * m;
+      l1_s_lsb = l1_msb * s;
+      r = ab - l1_s_lsb - s;
     end
   end
 

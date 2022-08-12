@@ -1,7 +1,9 @@
 // Source: https://github.com/ingonyama-zk/papers/blob/main/modular_multiplication.pdf
-
+`timescale 1ns/1ps
 // Calculate r = a * b mod s
-module ModMul (
+module ModMul #(
+  FIELD_WIDTH = 16 // Number of bits to represent element in field F_s
+) (
   clk,
   reset,
   s,        // Modulus, s
@@ -11,8 +13,7 @@ module ModMul (
   r         // Remainder, r
 );
 
-  parameter FIELD_WIDTH = 16; // Number of bits to represent element in field F_s
-  
+  // parameter FIELD_WIDTH = 16; 
   input clk, reset;
   input [FIELD_WIDTH:0] a, b, m;
   input [FIELD_WIDTH-1:0] s;

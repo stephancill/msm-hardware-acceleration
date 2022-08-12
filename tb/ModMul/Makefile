@@ -3,11 +3,15 @@
 
 # Makefile
 
+# TODO: Delete
+
 SRC = $(PWD)
 
 # defaults
 SIM ?= icarus
 TOPLEVEL_LANG ?= verilog
+
+COMPILE_ARGS = -PModMul.FIELD_WIDTH=32
 
 VERILOG_SOURCES += $(PWD)/../../src/ModMul/ModMul.v
 # use VHDL_SOURCES for VHDL files

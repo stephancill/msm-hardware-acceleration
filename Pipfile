@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 cocotb = "*"
+cocotb-test = "*"
 
 [dev-packages]
 

@@ -6,8 +6,12 @@ import pytest
 from cocotb_test.simulator import run
 import os
 
+# Warning: Do not name test methods with the prefix "test_"
+# otherwise pytest will execute them as tests. 
+# https://github.com/themperek/cocotb-test/issues/153
+
 @cocotb.test()
-async def test_modmul_example_16_bit(dut):
+async def modmul_example_16_bit(dut):
     """ Test modular multiplication """
 
     if dut.FIELD_WIDTH.value != 16:
@@ -38,11 +42,13 @@ async def test_modmul_example_16_bit(dut):
     assert dut.r.value.integer == dut.ab.value.integer % dut.s.value.integer, "Modular multiplication failed"
 
 @cocotb.test()
-async def test_modmul_example_32_bit(dut):
+async def modmul_example_32_bit(dut):
     """ Test modular multiplication """
 
     if dut.FIELD_WIDTH.value != 32:
         return
+
+    print("testing 32 bit")
 
     clock = Clock(dut.clk, 10, units="us")  # Create a 10us period clock on port clk
     cocotb.start_soon(clock.start())  # Start the clock
@@ -73,7 +79,8 @@ async def test_modmul_example_32_bit(dut):
 async def test_modmul_random(dut):
     """ Test modular multiplication with random inputs """
 
-    # TODO: Try pytest for parameterized tests https://github.com/themperek/cocotb-test/blob/master/tests/test_parameters.py
+    if dut.FIELD_WIDTH.value != 16:
+        return
 
     clock = Clock(dut.clk, 10, units="us")  # Create a 10us period clock on port clk
     cocotb.start_soon(clock.start())  # Start the clock
@@ -102,9 +109,10 @@ async def test_modmul_random(dut):
         assert dut.ab.value.integer == dut.a.value.integer * dut.b.value.integer, "Full multiplication failed"
         assert dut.r.value.integer == dut.ab.value.integer % dut.s.value.integer, "Modular multiplication failed"
 
-# TODO: Fix weird errors
+# TODO: Fix the constant 15 offset in final result, perhaps something to do with carry bit?
+
 @pytest.mark.parametrize(
-    "parameters", [{"FIELD_WIDTH": "16"}]
+    "parameters", [{"FIELD_WIDTH": "16"}, {"FIELD_WIDTH": "32"}]
 )
 def test_modmul_testcase(parameters):
     run(

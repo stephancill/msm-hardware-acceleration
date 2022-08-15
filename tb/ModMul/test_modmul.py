@@ -76,7 +76,7 @@ async def modmul_example_32_bit(dut):
 
 
 @cocotb.test()
-async def test_modmul_random(dut):
+async def modmul_random_16_bit(dut):
     """ Test modular multiplication with random inputs """
 
     if dut.FIELD_WIDTH.value != 16:

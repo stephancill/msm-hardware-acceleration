@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 cocotb = "*"
-cocotb-test = "*"
+cocotb-test = {path = "./external/cocotb-test"}
 
 [dev-packages]
 

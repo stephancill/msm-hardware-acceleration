@@ -4,7 +4,7 @@
 
 ```
 cd tb/ModMul
-SIM=icarus pipenv run pytest -o log_cli=True test_modmul.py
+WAVES=1 SIM=icarus pipenv run pytest -o log_cli=True test_modmul.py
 ```
 
 ## Directory structure references

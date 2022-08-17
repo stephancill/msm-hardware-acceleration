@@ -17,9 +17,10 @@ module ModMul (
   input [FIELD_WIDTH-1:0] s;
   output reg [FIELD_WIDTH-1:0] r;
 
-  reg [2*FIELD_WIDTH-1:0] ab;                   // Full
-  reg [3*FIELD_WIDTH:0] l1_full;  // TODO: Check if you can't do [3*FIELD_WIDTH:2*FIELD_WIDTH] and avoid intermediary wires
-  reg [FIELD_WIDTH+1:0] l1_s_lsb;
+  wire [2*FIELD_WIDTH-1:0] ab = a *b;                   // Full
+  wire [3*FIELD_WIDTH:0] l1_full = ab_msb * m;  // TODO: Check if you can't do [3*FIELD_WIDTH:2*FIELD_WIDTH] and avoid intermediary wires
+  wire [FIELD_WIDTH+1:0] l1_s_lsb = l1_msb * s;
+  wire [FIELD_WIDTH+1:0] r_plus = ab_lsb + ~l1_s_lsb + 1;
   
   wire [FIELD_WIDTH+1:0] ab_msb;    // MSB
   wire [FIELD_WIDTH+1:0] ab_lsb;    // LSB
@@ -29,16 +30,21 @@ module ModMul (
   assign ab_lsb = ab[FIELD_WIDTH+1:0]; 
   assign l1_msb = l1_full[2*FIELD_WIDTH:FIELD_WIDTH];
 
+  always @(r_plus) begin
+    r <= r_plus;
+  end
+
+  always @(r) begin
+    if (r_plus > s) begin
+      r = r - s;
+    end
+  end
+
   always @(posedge clk) begin
     if (reset) begin
-      ab <= 0;
-      l1_full <= 0;
-      l1_s_lsb <= 0;
+      
     end else begin
-      ab = a * b;
-      l1_full = ab_msb * m;
-      l1_s_lsb = l1_msb * s;
-      r = ab - l1_s_lsb - s;
+      
     end
   end
 

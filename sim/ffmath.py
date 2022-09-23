@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 
+from sim.multipliers.karatsuba import Karatsuba
+
 class Field:
     def __init__(self, p):
         self.p = p
         self.additions = 0
         self.multiplications = 0
+        self.multiplier = Karatsuba()
 
     def add(self, a, b):
         self.additions += 1
@@ -12,7 +15,7 @@ class Field:
 
     def mul(self, a, b):
         self.multiplications += 1
-        return a * b
+        return self.multiplier.mul(a, b)
 
     def ff_mul(self, a, b):
         return self.mul(a, b) % self.p

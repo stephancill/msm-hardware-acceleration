@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "540d342eda11d877c289776e1f203216ce59601b8568813f3ad48f53a2c4e28d"
+            "sha256": "4de3efbdf09ddb29041406a83e6bad0ea597a318d2e0b995f7839ace0424361c"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -23,6 +23,15 @@
             ],
             "markers": "python_version >= '3.5'",
             "version": "==22.1.0"
+        },
+        "bitstring": {
+            "hashes": [
+                "sha256:0de167daa6a00c9386255a7cac931b45e6e24e0ad7ea64f1f92a64ac23ad4578",
+                "sha256:a5848a3f63111785224dca8bb4c0a75b62ecdef56a042c8d6be74b16f7e860e7",
+                "sha256:e3e340e58900a948787a05e8c08772f1ccbe133f6f41fe3f0fa19a18a22bbf4f"
+            ],
+            "index": "pypi",
+            "version": "==3.1.9"
         },
         "cocotb": {
             "hashes": [
@@ -59,6 +68,14 @@
         "cocotb-test": {
             "path": "./external/cocotb-test",
             "version": "==0.2.2"
+        },
+        "colorama": {
+            "hashes": [
+                "sha256:854bf444933e37f5824ae7bfc1e98d5bce2ebe4160d46b5edf346a89358e99da",
+                "sha256:e6c6b4334fc50988a639d9b98aa429a0b57da6e17b9a44f0451f930b6967b7a4"
+            ],
+            "markers": "sys_platform == 'win32'",
+            "version": "==0.4.5"
         },
         "iniconfig": {
             "hashes": [

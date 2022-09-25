@@ -1,5 +1,6 @@
 import math
 from base import BaseMultiplier
+from bitstring import BitArray
 
 class Booth(BaseMultiplier):
     def __init__(self):
@@ -10,57 +11,35 @@ class Booth(BaseMultiplier):
         return self.booth(a, b)
 
     def booth(self, m, r):
-        """
-        Booth multiplication
-        """
-
-        x = max(math.ceil(math.log2(r)), math.ceil(math.log2(m))) + 3
+        # http://philosophyforprogrammers.blogspot.com/2011/05/booths-multiplication-algorithm-in.html
+        # Initialize
+        x = max(math.ceil(math.log2(r)), math.ceil(math.log2(m))) + 1
         y = x
-
-        # x = 4
-        # y = 4
-
-
-        print(f"m = {bin(m)}, r = {bin(r)}, x = {x}, y = {y}")
-
-        l = x+y+1
-        mask = 2**l - 1
-
-        print(f"-m = {bin((~m + 1) & mask)}")
-
-        A = (m << (y+1)) & mask
-        S = ((~m + 1) << (y+1)) & mask
-        P = (r << 1) & mask
-
-        print(f"A (bin): {bin(A)}")
-        print(f"S (bin): {bin(S)}")
-        print(f"P (bin): {bin(P)}")
-
-        for _ in range(y):
-            lsb = P & 0b11
-            print(f"P (bin): {bin(P)}, lsb = {bin(lsb)}")
-            v = 0
-            if lsb == 0b01:
-                print("v = (P + A) & mask")
-                print(f"v = ({bin(P)} + {bin(A)}) & {bin(mask)}")
-                v = (P + A) & mask
-            elif lsb == 0b10:
-                print("v = (P + S) & mask")
-                print(f"v = ({bin(P)} + {bin(S)}) & {bin(mask)}")
-                v = (P + S) & mask
-            elif lsb == 0b00:
-                print("v = P")
-                v = P
-            else:
-                print("v = P")
-                v = P
-            
-            P = v >> 1
-
-        print("Pen P (bin):", bin(P))
-        print("Final P (bin):", bin(P >> 1))
-
-        return P >> 1
+        totalLength = x + y + 1
+        mA = BitArray(int = m, length = totalLength)
+        rA = BitArray(int = r, length = totalLength)
+        A = mA << (y+1)
+        S = BitArray(int = -m, length = totalLength)  << (y+1)
+        P = BitArray(int = r, length = y)
+        P.prepend(BitArray(int = 0, length = x))
+        P = P << 1
+        print ("Initial values")
+        print ("A", A.bin)
+        print ("S", S.bin)
+        print ("P", P.bin)
+        print ("Starting calculation")
+        for _ in range(1,y+1):
+            if P[-2:] == '0b01':
+                P = BitArray(int = P.int + A.int, length = totalLength)
+                print ("P +  A:", P.bin)
+            elif P[-2:] == '0b10':
+                P = BitArray(int = P.int +S.int, length = totalLength)
+                print ("P +  S:", P.bin)
+            P = BitArray(int=P.int // 2, length=totalLength) # Arithmetic shift right
+            print ("P >> 1:", P.bin)
+        P = BitArray(int=P.int // 2, length=totalLength) # Arithmetic shift right
+        print ("P >> 1:", P.bin)
+        return P.int
 
 
     def __str__(self):
@@ -70,7 +49,7 @@ def test_booth():
     k = Booth()
     result = k.mul(123, 456)
     print(result)
-    assert result == 60
+    assert result == 123*456
     # assert k.mul(12345, 6789) == 83810205
     # print(k.multiplier)
 

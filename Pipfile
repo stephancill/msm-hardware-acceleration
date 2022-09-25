@@ -7,6 +7,7 @@ name = "pypi"
 cocotb = "*"
 cocotb-test = {path = "./external/cocotb-test"}
 libnum = "*"
+bitstring = "*"
 
 [dev-packages]
 

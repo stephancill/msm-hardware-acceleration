@@ -1,5 +1,6 @@
 import math
 from base import BaseMultiplier
+import random
 
 class Karatsuba(BaseMultiplier):
     def __init__(self):
@@ -39,7 +40,9 @@ class Karatsuba(BaseMultiplier):
 
 def test_karatsuba():
     k = Karatsuba()
-    assert k.mul(12345, 6789) == 83810205
+    a = random.randint(2**127, 2**128)
+    b = random.randint(2**127, 2**128)
+    assert k.mul(a, b) == a * b
     print(k.multiplier)
 
 if __name__ == "__main__":

@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
-from sim.multipliers.karatsuba import Karatsuba
+from multipliers.karatsuba import Karatsuba, BaseMultiplier
 
 class Field:
     def __init__(self, p):
         self.p = p
         self.additions = 0
         self.multiplications = 0
-        self.multiplier = Karatsuba()
+        self.multiplier = BaseMultiplier()
 
     def add(self, a, b):
         self.additions += 1

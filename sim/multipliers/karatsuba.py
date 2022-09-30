@@ -1,5 +1,5 @@
 import math
-from base import BaseMultiplier
+from .base import BaseMultiplier
 import random
 
 class Karatsuba(BaseMultiplier):

@@ -29,49 +29,127 @@ def ec_mul_affine(x1, y1, k, a, b, p):
 def ec_add_projective(x1, y1, z1, x2, y2, z2, a, b, p):
     """
     Add two points on an elliptic curve in homogeneous coordinates.
+    Source: https://eprint.iacr.org/2015/1060 (alg 1)
     """
-
-    # Source: https://eprint.iacr.org/2015/1060.pdf
 
     b3 = 3 * b
 
     field = Field(p)
 
-    t0 = field.ff_mul(x1, x2)
-    t1 = field.ff_mul(y1, y2)
-    t3 = field.ff_add(x2, y2)
-    t4 = field.ff_add(x1, y1)
-    t3 = field.ff_mul(t3, t4)
-    t4 = field.ff_add(t0, t1)
-    t3 = field.ff_add(t3, -t4)
-    t4 = field.ff_mul(x2, z1)
-    t4 = field.ff_add(t4, x1)
-    t5 = field.ff_mul(y2, z1)
-    t5 = field.ff_add(t5, y1)
+    t0 = field.ff_mul(x1, x2) #1
+    t1 = field.ff_mul(y1, y2) #2
+    t2 = field.ff_mul(z1, z2) #3
+    t3 = field.ff_add(x1, y1) #4
+    t4 = field.ff_add(x2, y2) #5
+    t3 = field.ff_mul(t3, t4) #6
+    t4 = field.ff_add(t0, t1) #7
+    t3 = field.ff_add(t3, -t4) #8
+    t4 = field.ff_add(x1, z1) #9
+    t5 = field.ff_add(x2, z2) #10
+    #11
+    t4 = field.ff_mul(t4, t5)
+    #12
+    t5 = field.ff_add(t0, t2)
+    #13
+    t4 = field.ff_add(t4, -t5)
+    #14
+    t5 = field.ff_add(y1, z1)
+    #15
+    x3 = field.ff_add(y2, z2)
+    #16
+    t5 = field.ff_mul(t5, x3)
+    #17
+    x3 = field.ff_add(t1, t2)
+    #18
+    t5 = field.ff_add(t5, -x3)
+    #19
     z3 = field.ff_mul(a, t4)
-    x3 = field.ff_mul(b3, z1)
+    #20
+    x3 = field.ff_mul(b3, t2)
+    #21
     z3 = field.ff_add(x3, z3)
+    #22
     x3 = field.ff_add(t1, -z3)
+    #23
     z3 = field.ff_add(t1, z3)
+    #24
     y3 = field.ff_mul(x3, z3)
+    #25
     t1 = field.ff_add(t0, t0)
+    #26
     t1 = field.ff_add(t1, t0)
-    t2 = field.ff_mul(a, z1)
-    t4 = field.ff_mul(b3, t4)
-    t1 = field.ff_add(t1, t2)
-    t2 = field.ff_add(t0, -t2)
+    #27
     t2 = field.ff_mul(a, t2)
+    #28
+    t4 = field.ff_mul(b3, t4)
+    #29
+    t1 = field.ff_add(t1, t2)
+    #30
+    t2 = field.ff_add(t0, -t2)
+    #31
+    t2 = field.ff_mul(a, t2)
+    #32
     t4 = field.ff_add(t4, t2)
+    #33
     t0 = field.ff_mul(t1, t4)
+    #34
     y3 = field.ff_add(y3, t0)
+    #35
     t0 = field.ff_mul(t5, t4)
+    #36
     x3 = field.ff_mul(t3, x3)
+    #37
     x3 = field.ff_add(x3, -t0)
+    #38
     t0 = field.ff_mul(t3, t1)
+    #39
     z3 = field.ff_mul(t5, z3)
+    #40
     z3 = field.ff_add(z3, t0)
 
-    print(field)
+    return x3, y3, z3
+
+
+
+def ec_dbl_projective(x, y, z, a, b, p):
+    """
+    Double a point on an elliptic curve in homogeneous projective coordinates. 
+    Source: https://eprint.iacr.org/2015/1060 (alg 3)
+    """
+    b3 = 3 * b
+    field = Field(p)
+    
+    t0 = field.ff_mul(x, x)         # 1
+    t1 = field.ff_mul(y, y)         # 2
+    t2 = field.ff_mul(z, z)         # 3
+    t3 = field.ff_mul(x, y)         # 4
+    t3 = field.ff_add(t3, t3)       # 5
+    z3 = field.ff_mul(x, z)         # 6
+    z3 = field.ff_add(z3, z3)       # 7
+    x3 = field.ff_mul(a, z3)        # 8
+    y3 = field.ff_mul(b3, t2)       # 9
+    y3 = field.ff_add(x3, y3)       # 10
+    x3 = field.ff_add(t1, -y3)      # 11
+    y3 = field.ff_add(t1, y3)       # 12
+    y3 = field.ff_mul(x3, y3)       # 13
+    x3 = field.ff_mul(t3, x3)       # 14
+    z3 = field.ff_mul(b3, z3)       # 15
+    t2 = field.ff_mul(a, t2)        # 16
+    t3 = field.ff_add(t0, -t2)      # 17
+    t3 = field.ff_mul(a, t3)        # 18
+    t3 = field.ff_add(t3, z3)       # 19
+    z3 = field.ff_add(t0, t0)       # 20
+    t0 = field.ff_add(z3, t0)       # 21
+    t0 = field.ff_add(t0, t2)       # 22
+    t0 = field.ff_mul(t0, t3)       # 23
+    y3 = field.ff_add(y3, t0)       # 24
+    t2 = field.ff_mul(y, z)         # 25
+    t2 = field.ff_add(t2, t2)       # 26
+    t0 = field.ff_mul(t2, t3)       # 27
+    x3 = field.ff_add(x3, -t0)      # 28
+    z3 = field.ff_mul(t2, t1)       # 29
+    z3 = field.ff_add(z3, z3)       # 30
+    z3 = field.ff_add(z3, z3)       # 31
 
     return x3, y3, z3
 
@@ -85,6 +163,29 @@ def ec_mul_projective(x1, y1, z1, k, a, b, p):
     z = z1
     for _ in range(k-1):
         x, y, z = ec_add_projective(x, y, z, x1, y1, z1, a, b, p)
+    
+    return x, y, z
+
+def ec_mul_projective2(x1, y1, z1, k, a, b, p):
+    """
+    Multiply a point on an elliptic curve in homogeneous projective coordinates using double-and-add method.
+    """
+
+    print("k = {}".format(k))
+
+    xt = x1
+    yt = y1
+    zt = z1
+
+    x = 0
+    y = 1
+    z = 0
+    for i in range(k.bit_length()):
+        if k & (1 << i):
+            print("add")
+            x, y, z = ec_add_projective(x, y, z, xt, yt, zt, a, b, p)
+        print("double")
+        xt, yt, zt = ec_dbl_projective(xt, yt, zt, a, b, p)
     
     return x, y, z
 

@@ -22,10 +22,11 @@ class Booth(BaseMultiplier):
     def mul(self, a, b):
         return self.booth(a, b)
 
-    def booth(self, m, r):
+    def booth(self, m, r, x=129):
         # http://philosophyforprogrammers.blogspot.com/2011/05/booths-multiplication-algorithm-in.html
         # Initialize
         x = max(math.ceil(math.log2(r)), math.ceil(math.log2(m))) + 1
+        print("x", x)
         y = x
         totalLength = x + y + 1
         mA = BitArray(int = m, length = totalLength)

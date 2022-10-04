@@ -171,8 +171,6 @@ def ec_mul_projective2(x1, y1, z1, k, a, b, p):
     Multiply a point on an elliptic curve in homogeneous projective coordinates using double-and-add method.
     """
 
-    print("k = {}".format(k))
-
     xt = x1
     yt = y1
     zt = z1
@@ -182,9 +180,7 @@ def ec_mul_projective2(x1, y1, z1, k, a, b, p):
     z = 0
     for i in range(k.bit_length()):
         if k & (1 << i):
-            print("add")
             x, y, z = ec_add_projective(x, y, z, xt, yt, zt, a, b, p)
-        print("double")
         xt, yt, zt = ec_dbl_projective(xt, yt, zt, a, b, p)
     
     return x, y, z

@@ -17,11 +17,17 @@ class Field:
         self.multiplications += 1
         return self.multiplier.mul(a, b)
 
+    def mod(self, a):
+        v = a
+        while v > self.p:
+            v = self.add(v, -self.p)
+        return v
+
     def ff_mul(self, a, b):
-        return self.mul(a, b) % self.p
+        return self.mod(self.mul(a, b))
 
     def ff_add(self, a, b):
-        return self.add(a, b) % self.p
+        return self.mod(self.add(a, b))
 
     def __str__(self):
         return f"Field({self.p}) [mul={self.multiplications}, add={self.additions}]"

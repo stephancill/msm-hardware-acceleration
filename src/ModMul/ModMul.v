@@ -8,18 +8,19 @@ module ModMul #(
   input reset,
   input [width-1:0] a,        // First multiplication element, a
   input [width-1:0] b,        // Second multiplication element, b
+  input enable,
   output [width-1:0] r,         // Remainder, r
-  output reg done
+  output done
 );
 
-  reg mul_done;
-  reg [2*width-1:0] ab;
+  wire mul_done;
+  wire [2*width-1:0] ab;
   reg reset_reducer;
   reg enable_reducer;
 
   always @(posedge clk) begin
     if (reset) begin
-      ab <= 0;
+//      ab <= 0;
       reset_reducer <= 0;
       enable_reducer <= 0;
     end else begin
@@ -43,7 +44,7 @@ module ModMul #(
       .enable(enable_reducer),
       .a(ab),
       .done(done),
-      .r(result)
+      .r(r)
   );
 
   // Multiplication module
@@ -59,7 +60,7 @@ module ModMul #(
     // control IOs
     .clk(clk),
     .rst_n(reset),
-    .i_enable(1),
+    .i_enable(enable),
     .o_finish(mul_done) 
   );
 

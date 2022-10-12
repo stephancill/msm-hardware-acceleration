@@ -8,7 +8,7 @@ reg   [wI-1:0]    a, b;
 wire  [wI-1:0]    r_ref, r;
 assign  r_ref = (a * b) % p;
 
-reg   clk, rst_n, i_enable, o_finish_rec, o_finish_norm;
+reg   clk, rst_n, i_enable;
 wire done;
 
 initial begin
@@ -28,20 +28,22 @@ initial begin
   a = 128'd123;
   b = 128'd456;
   i_enable = 1'b1;
-  #(CLK_PERIOD*100);
+  #CLK_PERIOD;
 
   // TODO: Check the result
   forever begin
-    if (done && r == oO_ref) begin
-      $display("PASS: oO == oO_ref!");
-      $finish();
-    end
-    else
-    begin
-        $display("ERROR: oO != oO_ref!");
-    end
+    if (done) begin
+        if (r == r_ref) begin
+            $display("PASS: r == r_re");
+            
+        end else
+        begin
+            $display("ERROR: r != r_re");
+        end
+        $finish();
+    end 
+    #CLK_PERIOD;
   end
-    
 end
 
 // initial
@@ -60,8 +62,9 @@ u_modmul (
     .reset(rst_n),
     .a(a),
     .b(b),
+    .enable(i_enable),
     .r(r),
-    .done(done),
+    .done(done)
 );
 
 endmodule

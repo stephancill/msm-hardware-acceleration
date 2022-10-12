@@ -8,7 +8,7 @@ reg   [2*wI-1:0]    a;
 wire  [wI-1:0]    oO_ref, result;
 assign  oO_ref = a % p;
 
-reg   clk, rst_n, i_enable, o_finish_rec, o_finish_norm;
+reg   clk, rst_n, i_enable;
 wire done;
 
 // TODO: Test case where a < p
@@ -28,14 +28,21 @@ initial begin
     i_enable = 1'b0;
     a = 10*p+12;
     i_enable = 1'b1;
-    #(CLK_PERIOD*100); // TODO: Dynamic
-    if (done && result == oO_ref) begin
-      $display("PASS: oO == oO_ref!");
-    end
-    else
-    begin
-        $display("ERROR: oO != oO_ref!");   
-    end
+    #(CLK_PERIOD);
+
+    forever begin
+        if (done) begin
+            if (result == oO_ref) begin
+                $display("PASS: result == oO_ref");
+                
+            end else
+            begin
+                $display("ERROR: result != oO_ref");
+            end
+            $finish();
+        end 
+        #CLK_PERIOD;
+      end
 end
 
 ModReduction #(

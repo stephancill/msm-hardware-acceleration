@@ -13,7 +13,7 @@ module ModMul #(
   output done
 );
 
-  reg mul_done;
+  wire mul_done;
   wire [2*width-1:0] ab;
   reg reset_reducer;
   reg enable_reducer;
@@ -24,7 +24,7 @@ module ModMul #(
       reset_reducer <= 0;
       enable_reducer <= 0;
     end else begin
-      if (mul_done) begin
+      if (mul_done && !enable_reducer) begin
         reset_reducer <= 1;
         enable_reducer <= 1;
       end else begin
@@ -59,7 +59,7 @@ module ModMul #(
     .oO(ab),
     // control IOs
     .clk(clk),
-    .rst_n(reset),
+    .reset(reset),
     .i_enable(enable),
     .o_finish(mul_done) 
   );

@@ -40,7 +40,7 @@ input   logic   [wI-1:0]    iY,
 output  logic   [wO-1:0]    oO,
 // control IOs
 input   logic   clk,
-input   logic   rst_n,
+input   logic   reset,
 input   logic   i_enable,
 output  logic   o_finish
 );
@@ -93,7 +93,7 @@ begin: p_eq_Xhi_x_Yhi
             .iY         (Y_hi),
             .oO         (p),
             .clk        (clk),
-            .rst_n      (rst_n),
+            .reset      (reset),
             .i_enable   (i_enable),
             .o_finish   (finish_p)
         );
@@ -119,7 +119,7 @@ begin: q_eq_Xlo_x_Ylo
             .iY         (Y_lo),
             .oO         (q),
             .clk        (clk),
-            .rst_n      (rst_n),
+            .reset      (reset),
             .i_enable   (i_enable),
             .o_finish   (finish_q)
         );
@@ -145,7 +145,7 @@ begin: ts_eq_rlo_x_slo
             .iY         (s_lo),
             .oO         (t_s),
             .clk        (clk),
-            .rst_n      (rst_n),
+            .reset      (reset),
             .i_enable   (i_enable),
             .o_finish   (finish_ts)
         );
@@ -157,10 +157,10 @@ assign t = ((r_hi & s_hi) << wI) + ((r_hi * s_lo + s_hi * r_lo) << wI_pt) + t_s;
 
 assign oO = (p << wI) + ((t - u) << wI_pt) + q;
 
-always  @(posedge clk or negedge rst_n)
-    if(!rst_n)
+always  @(posedge clk)
+    if(reset)
         o_finish    <= 1'b0;
     else
-        o_finish    <= finish_p && finish_q && finish_ts;
+        o_finish    <= i_enable && finish_p && finish_q && finish_ts;
 
 endmodule

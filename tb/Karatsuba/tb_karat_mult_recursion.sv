@@ -27,7 +27,7 @@
 //
 //-----------------------------------------------------------------------------
 
-`timescale 1ns/10fs
+`timescale 1ns / 1ps
 
 module karat_mult_recursion_tb();
 
@@ -41,16 +41,16 @@ logic   [wO-1:0]    oO_ref;
 logic   [wO-1:0]    oO_rec;
 assign  oO_ref = iX * iY;
 
-logic   clk, rst_n;
+logic   clk, reset;
 logic   i_enable, o_finish_rec;
 
 initial begin
     clk = 1'b1;
-    rst_n = 1'b1;
+    reset = 1'b0;
     #CLK_PERIOD;
-    rst_n = 1'b0;
+    reset = 1'b1;
     #CLK_PERIOD;
-    rst_n = 1'b1;
+    reset = 1'b0;
     #CLK_PERIOD;
     forever begin
         clk = ~clk;
@@ -59,9 +59,12 @@ initial begin
 end
 
 initial begin
+    reset = 1'b1;
     i_enable = 1'b0;
     iX = 'b0;
     iY = 'b0;
+    #CLK_PERIOD;
+    reset = 1'b0;
     #(CLK_PERIOD*10);
     i_enable = 1'b1;
     forever begin
@@ -83,23 +86,6 @@ initial begin
     end
 end
 
-string dump_scheme = "fsdb";
-string pass_info = "\
-  ____                        _ _ \n\
- |  _ \\ __ _ ___ ___  ___  __| | |\n\
- | |_) / _` / __/ __|/ _ \\/ _` | |\n\
- |  __/ (_| \\__ \\__ \\  __/ (_| |_|\n\
- |_|   \\__,_|___/___/\\___|\\__,_(_)\
- ";
-
-initial
-begin: sim_ctrl
-    #(CLK_PERIOD*20000);
-    $display("Info: Test case passed!");
-    $display(pass_info);
-    $finish;
-end
-
 karat_mult_recursion #(
     .wI         (wI),
     .nSTAGE     (nSTAGE)
@@ -107,6 +93,8 @@ karat_mult_recursion #(
 u_karat_mult_recursion (
     .o_finish   (o_finish_rec),
     .oO         (oO_rec),
+    .reset(reset),
+    .clk(clk),
     .*);
 
 endmodule

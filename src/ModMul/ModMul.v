@@ -22,7 +22,6 @@ module ModMul #(
 
   always @(posedge clk) begin
     if (reset) begin
-//      ab <= 0;
       ld <= 1'b0;
       reset_reducer <= 0;
       enable_reducer <= 0;
@@ -73,7 +72,6 @@ module ModMul #(
 
   // - Booth multiplication
 
-// TODO: Handle Ld (needs to be toggled on start)
 // always @(posedge enable) begin
 //   ld <= 1'b1;
 // end

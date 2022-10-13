@@ -26,5 +26,5 @@ always @(clk) begin
 end
 
 
-  
+
 endmodule

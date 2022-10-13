@@ -30,41 +30,34 @@ initial begin
   i_enable = 1'b1;
   #CLK_PERIOD;
 
-  // TODO: Check the result
-  forever begin
-    if (done) begin
-        if (r == r_ref) begin
-            $display("PASS: r == r_re");
+ forever begin
+   if (done) begin
+       if (r == r_ref) begin
+           $display("PASS: r == r_re");
             
-        end else
-        begin
-            $display("ERROR: r != r_re");
-        end
-        $finish();
-    end 
-    #CLK_PERIOD;
-  end
+       end else
+       begin
+           $display("ERROR: r != r_re");
+       end
+       $finish();
+   end 
+   #CLK_PERIOD;
+ end
 end
 
-// initial
-// begin: sim_ctrl
-//     #(CLK_PERIOD*20000);
-//     $display("Info: Test case passed!");
-//     $finish;
-// end
 
 ModMul #(
-    .p(p),
-    .width(wI)
+   .p(p),
+   .width(wI)
 )
 u_modmul (
-    .clk(clk),
-    .reset(rst_n),
-    .a(a),
-    .b(b),
-    .enable(i_enable),
-    .r(r),
-    .done(done)
+   .clk(clk),
+   .reset(rst_n),
+   .a(a),
+   .b(b),
+   .enable(i_enable),
+   .r(r),
+   .done(done)
 );
 
 endmodule

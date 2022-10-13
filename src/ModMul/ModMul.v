@@ -13,7 +13,7 @@ module ModMul #(
   output done
 );
 
-  wire mul_done;
+  reg mul_done;
   wire [2*width-1:0] ab;
   reg reset_reducer;
   reg enable_reducer;

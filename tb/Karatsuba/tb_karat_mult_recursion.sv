@@ -31,18 +31,18 @@
 
 module karat_mult_recursion_tb();
 
-parameter wI = 1024;
+parameter wI = 128;
 parameter wO = 2 * wI;
 parameter nSTAGE = 5;
 parameter CLK_PERIOD = 10;
 
 logic   [wI-1:0]    iX, iY;
 logic   [wO-1:0]    oO_ref;
-logic   [wO-1:0]    oO_rec, oO_norm;
+logic   [wO-1:0]    oO_rec;
 assign  oO_ref = iX * iY;
 
 logic   clk, rst_n;
-logic   i_enable, o_finish_rec, o_finish_norm;
+logic   i_enable, o_finish_rec;
 
 initial begin
     clk = 1'b1;
@@ -67,7 +67,11 @@ initial begin
     forever begin
         if(o_finish_rec && clk)
         begin
-            assert (oO_rec == oO_ref) 
+            assert (oO_rec == oO_ref);
+            if (oO_rec == oO_ref) begin
+                assert (oO_rec == oO_ref); 
+                $display("PASS: oO == oO_ref");
+            end
             else
             begin
                 $error("ERROR: oO != oO_ref!");

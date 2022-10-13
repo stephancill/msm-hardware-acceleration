@@ -15,15 +15,21 @@ module ModMul #(
 
   wire mul_done;
   wire [2*width-1:0] ab;
-  reg reset_reducer;
-  reg enable_reducer;
+  reg reset_reducer, enable_reducer;
+
+  // Karatsuba only
+  reg ld;
 
   always @(posedge clk) begin
     if (reset) begin
 //      ab <= 0;
+      ld <= 1'b0;
       reset_reducer <= 0;
       enable_reducer <= 0;
     end else begin
+      if (ld) begin
+        ld <= 1'b0;
+      end
       if (mul_done && !enable_reducer) begin
         reset_reducer <= 1;
         enable_reducer <= 1;
@@ -48,20 +54,40 @@ module ModMul #(
   );
 
   // Multiplication module
-  karat_mult_recursion #(
-    .wI         (width),
-    .nSTAGE     (5)
-  )
-  u_karat_mult_recursion (
-    // data IOs
-    .iX(a),
-    .iY(b),
-    .oO(ab),
-    // control IOs
-    .clk(clk),
-    .reset(reset),
-    .i_enable(enable),
-    .o_finish(mul_done) 
-  );
+  // - Karatsuba
+ karat_mult_recursion #(
+   .wI         (width),
+   .nSTAGE     (5)
+ )
+ u_karat_mult_recursion (
+   // data IOs
+   .iX(a),
+   .iY(b),
+   .oO(ab),
+   // control IOs
+   .clk(clk),
+   .reset(reset),
+   .i_enable(enable),
+   .o_finish(mul_done) 
+ );
+
+  // - Booth multiplication
+
+// TODO: Handle Ld (needs to be toggled on start)
+// always @(posedge enable) begin
+//   ld <= 1'b1;
+// end
+
+// Booth_Multiplier #(
+//     .pN(7)
+//   ) u_booth_mult (
+//     .Rst(reset), 
+//     .Clk(clk), 
+//     .Ld(ld), 
+//     .M(a), 
+//     .R(b), 
+//     .Valid(mul_done), 
+//     .P(ab)
+//   );
 
 endmodule

@@ -25,6 +25,7 @@ end
 
 initial begin
   i_enable = 1'b0;
+  #(CLK_PERIOD*5);
   a = 128'd123;
   b = 128'd456;
   i_enable = 1'b1;

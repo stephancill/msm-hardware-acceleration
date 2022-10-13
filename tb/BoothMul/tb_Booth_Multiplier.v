@@ -64,7 +64,8 @@
 
 module tb_Booth_Multiplier;
 
-parameter N = 2;
+parameter N = 7;
+parameter CLK_PERIOD = 10;
 
 //  UUT Signals
 
@@ -76,54 +77,61 @@ reg     [(2**N - 1):0] M;
 reg     [(2**N - 1):0] R;
 
 wire    Valid;
-wire    [(2**(N+1) - 1):0] P;
+wire    [(2**(N+1) - 1):0] P, P_ref;
+assign P_ref = M * R;
 
-//  Simulation Variables
-
-reg     [2**(N+1):0] i;
 
 // Instantiate the Unit Under Test (UUT)
 
 Booth_Multiplier    #(
-                        .pN(N)
-                    ) uut (
-                        .Rst(Rst), 
-                        .Clk(Clk), 
-                        .Ld(Ld), 
-                        .M(M), 
-                        .R(R), 
-                        .Valid(Valid), 
-                        .P(P)
-                    );
+    .pN(N)
+  ) uut (
+    .Rst(Rst), 
+    .Clk(Clk), 
+    .Ld(Ld), 
+    .M(M), 
+    .R(R), 
+    .Valid(Valid), 
+    .P(P)
+  );
 
 initial begin
     // Initialize Inputs
-    Rst = 1;
-    Clk = 1;
-    Ld  = 0;
-    M   = 0;
-    R   = 0;
-    
-    i   = 0;
+  Rst = 1;
+  Clk = 1;
+  Ld  = 0;
+  M   = 0;
+  R   = 0;
+ 
 
-    // Wait 100 ns for global reset to finish
-    #101 Rst = 0;
-    
-    // Add stimulus here
-    
-    for(i = 0; i < (2**(2**(N+1))); i = i + 1) begin
-        @(posedge Clk) #1 Ld = 1;
-            M = i[(2**(N+1) - 1):2**N];
-            R = i[(2**N - 1):0];
-        @(posedge Clk) #1 Ld = 0;
-        @(posedge Valid);
-    end
+  // Wait 100 ns for global reset to finish
+  #(CLK_PERIOD*10) Rst = 0;
+  
+  // Add stimulus here
+  #CLK_PERIOD Ld = 1'b1;
+
+  M = 128'd123;
+  R = 128'd456;
+
+  #(CLK_PERIOD*2) Ld = 1'b0;
+
+  forever begin
+    if (Valid) begin
+      if (P == P_ref) begin
+        $display("PASS: P == P_ref");
+      end else begin
+        $display("ERROR: P != P_ref");
+      end
+      $finish();
+    end 
+    #CLK_PERIOD;
+  end
     
 end
 
 ///////////////////////////////////////////////////////////////////////////////
 
-always #5 Clk = ~Clk;
+always #CLK_PERIOD Clk = ~Clk;
       
 ///////////////////////////////////////////////////////////////////////////////
 

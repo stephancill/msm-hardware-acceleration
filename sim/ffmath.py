@@ -19,11 +19,18 @@ class Field:
 
     def mod(self, a):
         v = a
+        if a < 0:
+            while v < self.p:
+                v = self.add(v, self.p)
+        
         while v > self.p:
-            v = self.add(v, -self.p)
+                v = self.add(v, -self.p)
         return v
 
     def ff_mul(self, a, b):
+        # alert if a or b is negative
+        if a < 0 or b < 0:
+            print("WARNING: negative value in field multiplication")
         return self.mod(self.mul(a, b))
 
     def ff_add(self, a, b):

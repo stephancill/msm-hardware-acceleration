@@ -35,9 +35,10 @@ parameter nSTAGE = 2
 )
 (
 // data IOs
-input   logic   [wI-1:0]    iX,
-input   logic   [wI-1:0]    iY,
-output  logic   [wO-1:0]    oO,
+// TODO: Implement naive mod method from simulation, negate answer based on xor of sign bit of a and b
+input   logic signed   [wI-1:0]    iX,
+input   logic signed   [wI-1:0]    iY,
+output  logic signed  [wO-1:0]    oO,
 // control IOs
 input   logic   clk,
 input   logic   reset,
@@ -155,7 +156,10 @@ endgenerate
 
 assign t = ((r_hi & s_hi) << wI) + ((r_hi * s_lo + s_hi * r_lo) << wI_pt) + t_s;
 
-assign oO = (p << wI) + ((t - u) << wI_pt) + q;
+assign oO_inter = (p << wI) + ((t - u) << wI_pt) + q;
+
+// Invert the output if and only if one of the inputs is negative
+assign oO = (iX[wI] ^ iY[wI]) ? -oO_inter : oO_inter;
 
 always  @(posedge clk)
     if(reset)

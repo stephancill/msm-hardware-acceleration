@@ -30,15 +30,14 @@ module tb_main(
 
   reg clk, reset, enable;
 
-  reg a = 32'd123;
-  reg b = 32'd456;
-  reg c = 32'd789;
-  reg d = 32'd123;
+  reg [width-1:0] a, b, c, d;
 
-  wire [31:0] r_ab, r_c_min_d, r_ab_plus_c_min_d;
+  wire [width-1:0] r_ab, r_c_min_d, r_ab_plus_c_min_d;
   wire done_ab, done_c_min_d, done_ab_plus_c_min_d;
 
   wire stage1_done = done_ab & done_c_min_d;
+
+  wire [width-1:0] ref = (r_ab + c + d) % p; // TODO -d
 
   /* 
   * Stage 1: a * b, c - d
@@ -63,7 +62,7 @@ module tb_main(
     .clk(clk),
     .reset(reset),
     .a(c),
-    .b(-d),
+    .b(d), // TODO: -d
     .enable(enable),
     .r(r_c_min_d),
     .done(done_c_min_d)
@@ -71,7 +70,7 @@ module tb_main(
 
 
   /* 
-  * Stage 2: a * b + c - d
+  * Stage 2: ab + c - d
   */
   ModAdd #(
     .p(p),
@@ -88,14 +87,34 @@ module tb_main(
 
   initial begin
     clk = 1'b1;
-    reset = 1'b1;
-    #10;
-    reset = 1'b0;
-    #10;
-    enable = 1'b1;
+    #(10/2);
     forever begin
       clk = ~clk;
       #(10/2);
+    end
+  end
+  
+  initial begin
+    a = 32'd123;
+    b = 32'd456;
+    c = 32'd789;
+    d = 32'd123;
+    reset = 1'b1;
+    enable = 1'b0;
+    #10;
+    reset = 1'b0;
+    enable = 1'b1;
+    
+    forever begin
+      if (done_ab_plus_c_min_d) begin
+        if (ref == r_ab_plus_c_min_d) begin
+          $display("PASS: r == r_re");
+        end else begin
+          $display("ERROR: r != r_re");
+        end
+        $finish();
+      end
+      #10;
     end
   end
 

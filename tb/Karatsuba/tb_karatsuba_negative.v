@@ -17,26 +17,25 @@ module tb_karatsuba_negative(
   /* 
   * Stage 1: a * b, c - d
   */
-  karat_mult_recursion #(
-    .wI         (width),
-    .nSTAGE     (3)
+  KaratsubaWrapper #(
+    .width         (width),
+    .stages     (3)
   )
-  u_karat_mult_recursion (
-//     input   logic   [wI-1:0]    iX,
-// input   logic   [wI-1:0]    iY,
-// output  logic   [wO-1:0]    oO,
-// // control IOs
-// input   logic   clk,
-// input   logic   reset,
-// input   logic   i_enable,
-// output  logic   o_finish
-    .iX          (a),
-    .iY          (b),
-    .oO          (ab),
-    .clk         (clk),
-    .reset       (reset),
-    .i_enable    (enable),
-    .o_finish    (done)
+  u_karatsuba_wrapper (
+// input clk,
+  // input reset,
+  // input signed [width-1:0] a,        // First multiplication element, a
+  // input signed [width-1:0] b,        // Second multiplication element, b
+  // input enable,
+  // output signed [2*width-1:0] ab,         // Remainder, r
+  // output done
+    .a(a),
+    .b(b),
+    .ab(ab),
+    .clk(clk),
+    .reset(reset),
+    .enable(enable),
+    .done(done)
     );
 
   initial begin

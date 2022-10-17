@@ -32,12 +32,12 @@ module tb_main(
 
   reg [width-1:0] a, b, c, d;
 
-  wire [width-1:0] r_ab, r_c_min_d, r_ab_plus_c_min_d;
+  wire signed [width-1:0] r_ab, r_c_min_d, r_ab_plus_c_min_d;
   wire done_ab, done_c_min_d, done_ab_plus_c_min_d;
 
   wire stage1_done = done_ab & done_c_min_d;
 
-  wire [width-1:0] ref = (r_ab + c + d) % p; // TODO -d
+  wire signed [width-1:0] ref = (r_ab + c - d) % p; // TODO -d
 
   /* 
   * Stage 1: a * b, c - d
@@ -98,7 +98,7 @@ module tb_main(
     a = 32'd123;
     b = 32'd456;
     c = 32'd789;
-    d = 32'd123;
+    d = -32'sd123;
     reset = 1'b1;
     enable = 1'b0;
     #10;

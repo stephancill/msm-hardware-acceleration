@@ -17,7 +17,7 @@ module ModMul #(
   wire [2*width-1:0] ab;
   reg reset_reducer, enable_reducer;
 
-  // Karatsuba only
+  // Booth only
   reg ld;
 
   always @(posedge clk) begin

@@ -14,10 +14,10 @@ module KaratsubaWrapper #(
 
 wire unsigned [width-1:0] a_abs, b_abs, ab_abs;
 
-assign a_abs = a;
-assign b_abs = b;
+assign a_abs = a[width-1] ? -a : a; // First bit is sign bit
+assign b_abs = b[width-1] ? -b : b;
 
-assign ab = (a < 0) ^ (b < 0) ? -ab_abs : ab_abs;
+assign ab = a[width-1] ^ b[width-1] ? -ab_abs : ab_abs;
 
 karat_mult_recursion #(
     .wI         (width),

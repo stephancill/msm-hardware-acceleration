@@ -1,36 +1,44 @@
 from ffmath import Field
 
-
+# class BarrettReducer:
+    
+# 	modulus: int
+# 	shift: int
+# 	factor: int
+    
+    
+# 	def __init__(self, mod: int):
+# 		if mod <= 0:
+# 			raise ValueError("Modulus must be positive")
+# 		if mod & (mod - 1) == 0:
+# 			raise ValueError("Modulus must not be a power of 2")
+# 		self.modulus = mod
+# 		self.shift = mod.bit_length() * 2
+# 		self.factor = (1 << self.shift) // mod
+    
+    
+# 	# For x in [0, mod^2), this returns x % mod.
+# 	def reduce(self, x: int) -> int:
+# 		mod = self.modulus
+# 		assert 0 <= x < mod**2
+# 		t = (x - ((x * self.factor) >> self.shift) * mod)
+# 		return t if (t < mod) else (t - mod)
 class BarrettReduction(Field):
     def __init__(self, p, n):
         super().__init__(p)
-        self.s = p
-        self.n = n # bit length of inputs
-        self.m = int(2**(2*self.n) / self.s)
+        self.p = p
+        self.n = n * 2 # 2x bit length of p
+        self.r = (1 << self.n) // p # Precomputed factor floor(4^k / p)
 
     def ff_mul(self, a, b):
-        # Author: Yuval Domb, Ingoyama
-        ab = self.mul(a, b)
-
-        # a*b full mult
-        ab_msb = ab >> self.n
-        ab_lsb = ab & ((1 << self.n + 2) - 1)
-
-        # ab*m msb mult (attempt)
-        abm = self.mul(ab_msb, self.m)
-        l1 = abm >> self.n
-
-        # l1*s lsb mult
-        l1s = self.mul(l1, self.s)
-        l1s_lsb = l1s & ((1 << (self.n + 2)) - 1)
-
-        # ab-l1s fixed width adder
-        r_plus = self.add (ab_lsb, ~l1s_lsb + 1) & ((1 << (self.n + 2)) - 1)
-
-        while r_plus >= self.s:
-            r_plus = r_plus - self.s
+        ab = self.mul(a, b) # 0 <= x <= p^2
         
-        return r_plus
+        # Reduction
+        abr = self.mul(ab, self.r) # m1
+        abr_div4_k = abr >> self.n 
+        abr_div4_k_p = self.mul(abr_div4_k, self.p) # m2
+        t = self.add(ab, -abr_div4_k_p)
+        return t if (t < self.p) else (t - self.p)
 
 
 

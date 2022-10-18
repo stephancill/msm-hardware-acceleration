@@ -1,5 +1,5 @@
 module BarrettReduction #(
-  parameter signed p = 128'b37, // a mod p = r
+  parameter signed p = 128'd37, // a mod p = r
   parameter width = 128 // width of the output
 ) (
   input   reset,                    // Reset
@@ -7,73 +7,68 @@ module BarrettReduction #(
   input enable,
   input signed [2*width-1:0]   a,                      // Number to be reduced, a
   output reg done,
-  output wire signed [width-1:0] r            // Remainder, r
+  output wire signed [width-1:0] r            // Remainder, r (reffered to as t in the paper)
 );
 
-  localparam m = 2**(2*width) / p;
+  // Requirement: a < p^2
+  // https://www.nayuki.io/page/barrett-reduction-algorithm
+  localparam n_2 = width * 2'd2;
+  localparam r_ = 1 << n_2 / p; // TODO: Fix this check this maybe: https://github.com/ljhsiun2/EllipticCurves_SystemVerilog/blob/master/src/primitives/modular_operations/barrett_reduction.sv
 
-  wire [width-1:0] s = p;
+  wire signed [3*width-1:0] abr;
+  wire [width-1:0] abr_div4_k = abr >> n_2;
+  wire [2*width-1:0] abr_div4_k_times_p;
+  // t = ab - abr_div4_k_times_p
+  reg [width-1:0] t;
+  assign r = t;
 
-  wire [2*width-1:0] ab = a;                   // Full
-  wire [3*width:0] l1_full; // = ab_msb * m;  // TODO: Check if you can't do [3*width:2*width] and avoid intermediary wires
-  wire [width+1:0] l1_s_lsb; // = l1_msb * s;
-  wire [width+1:0] r_plus;
-  
-  wire [width+1:0] ab_msb;    // MSB
-  wire [width+1:0] ab_lsb;    // LSB
-  wire [width+1:0] l1_msb;
-
-  assign ab_msb = ab[2*width-1:width];
-  assign ab_lsb = ab[width+1:0]; 
-  assign l1_msb = l1_full[2*width:width];
-
-  assign r = r_plus[width-1:0];
-
-  wire m1_done, m2_done, a1_done;
+  wire m1_done, m2_done;
 
   MultiplierAdapter #(
-    .width         (width)
-  )
-  u_m1 (
-    .a(ab_msb),
-    .b(m),
-    .ab(l1_full),
+    .width(2*width)
+  ) u_m1 (
     .clk(clk),
     .reset(reset),
     .enable(enable),
+    .a(a),
+    .b(r_),
+    .ab(abr),
     .done(m1_done)
-    );
+  );
 
-  // TODO: Use single multiplier
   MultiplierAdapter #(
-    .width         (width)
-  )
-  u_m2 (
-    .a(l1_msb),
-    .b(s),
-    .ab(l1_s_lsb),
+    .width(width)
+  ) u_m2 (
     .clk(clk),
     .reset(reset),
-    .enable(m1_done),
+    .enable(enable),
+    .a(abr_div4_k),
+    .b(p),
+    .ab(abr_div4_k_times_p),
     .done(m2_done)
-    );
+  );
 
-  always @(posedge clk) begin
+  always @(posedge clk ) begin
     if (reset) begin
-      state <= WAITING_FOR_NEW;
-      m1_done <= 1'b0;
-      m2_done <= 1'b0;
-    end else begin
-      if (enable) begin
-        if (m2_done && !a1_done) begin
-          r_plus <= ab_lsb + ~l1_s_lsb + 1;
-          a1_done <= 1'b1;
-        end else if (a1_done && !done) begin
-          r_plus = r_plus - s;
-          done = r_plus < s;
+      t <= 0;
+      done <= 0;
+    end else if (enable) begin
+      if (m1_done && m2_done && !done) begin
+        if (t >= p) begin
+          t <= t - p;
+          done <= 1;
+        end else begin
+          done <= 1;
         end
       end
     end
   end
+
+
+
+
+
+
+
   
 endmodule

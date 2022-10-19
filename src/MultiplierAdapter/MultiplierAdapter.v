@@ -16,7 +16,7 @@ module MultiplierAdapter #(
   // Chosen multiplication module
   // KaratsubaWrapper #(
   //   .width         (width),
-  //   .stages     (3)
+  //   .stages     (2)
   // )
   // u_karatsuba_wrapper (
   //   .a(a),

@@ -161,10 +161,13 @@ end
 
 always @(posedge Clk)
 begin
-    if(Rst)
+    if(Rst) begin
         Valid <= #1 0;
-    else
-        Valid <= #1 (Cntr == 1);
+    end else begin
+      if (Cntr == 1) begin
+        Valid <= #1 1;
+      end
+    end
 end
 
 endmodule

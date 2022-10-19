@@ -1,5 +1,5 @@
 module BarrettReduction #(
-  parameter signed p = 128'd37, // a mod p = r
+  parameter integer p = 128'd37, // a mod p = r
   parameter width = 128 // width of the output
 ) (
   input   reset,                    // Reset
@@ -12,8 +12,8 @@ module BarrettReduction #(
 
   // Requirement: a < p^2
   // https://www.nayuki.io/page/barrett-reduction-algorithm
-  localparam n_2 = width * 2'd2;
-  localparam r_ = 1 << n_2 / p; // TODO: Fix this check this maybe: https://github.com/ljhsiun2/EllipticCurves_SystemVerilog/blob/master/src/primitives/modular_operations/barrett_reduction.sv
+  localparam integer n_2 = width * 2;
+  localparam [2*width:0] r_ = (1'b1 << n_2) / p;  // TODO: Fix this check this maybe: https://github.com/ljhsiun2/EllipticCurves_SystemVerilog/blob/master/src/primitives/modular_operations/barrett_reduction.sv
 
   wire signed [3*width-1:0] abr;
   wire [width-1:0] abr_div4_k = abr >> n_2;
@@ -41,7 +41,7 @@ module BarrettReduction #(
   ) u_m2 (
     .clk(clk),
     .reset(reset),
-    .enable(enable),
+    .enable(m1_done),
     .a(abr_div4_k),
     .b(p),
     .ab(abr_div4_k_times_p),
@@ -54,10 +54,14 @@ module BarrettReduction #(
       done <= 0;
     end else if (enable) begin
       if (m1_done && m2_done && !done) begin
+        t = a - abr_div4_k_times_p;
+        $display("t=%d, p=%d", t, p);
         if (t >= p) begin
+          $display("t >= p");
           t <= t - p;
           done <= 1;
         end else begin
+          $display("t < p");
           done <= 1;
         end
       end

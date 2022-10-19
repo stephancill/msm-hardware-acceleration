@@ -1,7 +1,7 @@
-module tb_BarrettReduction();
+module tb_ModReductionAdapter();
  // Field math example: 123 * 456 + 789 - 123 mod 37
   parameter width = 16;
-  parameter p = 8'd37;
+  parameter p = 16'd37;
 
   reg clk, reset, enable;
 
@@ -15,10 +15,10 @@ module tb_BarrettReduction();
   /* 
   * Stage 1: a * b, c - d
   */
-  BarrettReduction #(
+  ModReductionAdapter #(
     .p(p),
     .width(width)
-  ) u_barrett (
+  ) u_reducer (
     .reset(reset),                    // Reset
     .clk(clk),                    // Clock
     .enable(enable),
@@ -37,7 +37,7 @@ module tb_BarrettReduction();
   end
   
   initial begin
-    a = 16'd38;
+    a = 16'd1300;
     #10;
     reset = 1'b1;
     enable = 1'b0;

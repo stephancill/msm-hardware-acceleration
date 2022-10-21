@@ -29,6 +29,15 @@ Px = 4'd6;
 Py = 4'd1;
 Qx = 4'd8;
 Qy = 4'd1;
+
+forever begin
+    if (Done) begin
+        assert (Rx == 23);
+        assert (Ry == 36);
+        $finish;
+    end else
+        #1;
+end
 end
 
 endmodule

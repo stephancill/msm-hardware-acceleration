@@ -6,7 +6,7 @@ timeunit 10ns;	// Half clock cycle at 50 MHz
 timeprecision 1ns;
 
 logic Clk, Reset;
-logic [255:0] Py, Qy, Px, Qx, Rx, Ry, k;
+logic [255:0] Py, Px, Rx, Ry, k;
 logic Done;
 
 point_mul p(.P({Px, Py}), .R({Rx, Ry}), .clk(Clk), .*);

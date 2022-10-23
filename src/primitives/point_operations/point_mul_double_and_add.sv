@@ -9,49 +9,42 @@ module point_mul_double_and_add	(
 );
 
 // 256-bit counter
-logic [255:0] counter;
+logic [$clog2(256)-1:0] counter;
 
 // Intermediate curves
-curve_point_t R_add_temp, R_double_temp, R_temp, Q;
+curve_point_t R_add_temp, R_double_temp, R_temp, J;
 
-logic reset_add, reset_double;
-logic add_done, double_done, stage1_done;
+logic local_reset, add_done, double_done, should_add;
 
-// Consecutively add P to itself k times
-point_add p_add(.Reset(reset_add), .P(R_temp), .R(R_add_temp), .Done(add_done), .*);
-point_double p_double(.Reset(reset_double), .R(R_double_temp), .Done(double_done), .*);
+assign should_add = k[counter];
+assign Done = counter == 255 && double_done && add_done;
+assign R = R_temp;
+
+// Double-and-add method
+point_add     p_add(.Reset(local_reset), .P(R_temp), .Q(J), .R(R_add_temp), .Done(add_done), .*);
+point_double  p_double(.Reset(local_reset), .P(J), .R(R_double_temp), .Done(double_done), .*);
 
 always_ff @ (posedge clk) begin
   if (Reset == 1) begin
     // Global reset
-    $display("reset %d", k);
     counter <= 0;
-    Q <= P;
-    R_temp <= P;
-    reset_add <= 0;
-    reset_double <= 0;
+    J <= P;
+    R_temp <= inf_point;
+    local_reset <= 1;
     Done <= 0;
     if (k == 1) begin
       R <= P;
       Done <= 1;
     end 
   end else if (!Done) begin
-    if (reset_add) begin
-      // Reset adder or doubler
+    if (local_reset) begin
+      local_reset <= 0;
+    end else if (double_done & add_done) begin
       counter <= counter + 1;
-      reset_add <= 0;
-    end else if (counter == 0) begin
-      // Add initial point to intermediate point
-      R <= R_temp;
-      Done <= 1;
-    end else if (add_done) begin
-      // Add done
-      R_temp <= R_add_temp;
-      reset_add <= 1;
-    end else if (double_done & ~stage1_done) begin
-      R_temp <= R_double_temp;
-      reset_add <= 1;
-      stage1_done <= 1;
+      local_reset <= 1;
+      if (should_add) begin
+        R_temp <= R_add_temp;
+      end
     end
   end
 end

@@ -5,6 +5,7 @@ typedef struct packed {
     logic [255:0] y;
 } curve_point_t;
 
+curve_point_t inf_point = {256'h0, 256'h0};
 
 typedef struct packed {
     logic [255:0] p;

@@ -56,8 +56,8 @@ module point_add (
 	//add #(17) add7(.a(sum4), .b({254'b0, 2'b10}), .op(1'b0), .sum(sum8)); // Rx + a (for x^3 + 2x + 2, a is 2)
 
 
-	assign R.x = sum4;
-	assign R.y = sum6;
-	assign Done = mult0_done & inv_done & mult1_done & mult2_done;
+	assign R.x = P == inf_point ? Q.x : sum4;
+	assign R.y = P == inf_point ? Q.y : sum6;
+	assign Done = (mult0_done & inv_done & mult1_done & mult2_done) || (P == inf_point);
 
 endmodule

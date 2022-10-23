@@ -1,5 +1,5 @@
 //openssl ec -in ecprivkey.pem -pubout -out ecpubkey.pem
-module point_mult_testbench();
+module point_mult_double_add_testbench();
 
 timeunit 10ns;	// Half clock cycle at 50 MHz
 			// This is the amount of time represented by #1
@@ -9,7 +9,7 @@ logic Clk, Reset;
 logic [255:0] Py, Px, Rx, Ry, k;
 logic Done;
 
-point_mul p(.P({Px, Py}), .R({Rx, Ry}), .clk(Clk), .*);
+point_mul_double_and_add p(.P({Px, Py}), .R({Rx, Ry}), .clk(Clk), .*);
 
 // Toggle the clock
 // #1 means wait for a delay of 1 timeunit

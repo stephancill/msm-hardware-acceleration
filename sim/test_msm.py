@@ -9,15 +9,15 @@ def test_msm():
 
     msm = BaseMSM(a, b, p)
 
-    points = [(6, 1), (17, 6)]
-    scalars = [18, 80] # (24, 17), (13, 24)
+    points = [(6, 1), (17, 6), (5, 13)]
+    scalars = [18, 80, 17] # (24, 17), (13, 24), (19, 24)
 
     x, y = msm.msm(points, scalars)
 
     print(x, y)
 
-    assert x == 16
-    assert y == 25
+    assert x == 35
+    assert y == 6
 
     points = [(6, 1), (5, 13)]
     scalars = [18, 80] # (24, 17), (16, 25)

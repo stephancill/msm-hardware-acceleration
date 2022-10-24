@@ -14,7 +14,7 @@ curve_point_t G [length-1:0];
 logic [255:0]	x [length-1:0];
 logic Done;
 
-msm_naive msm(.G(G), .x(x), .R({Rx, Ry}), .*);
+msm_naive #(.length(2)) msm (.G(G), .x(x), .R({Rx, Ry}), .*);
 // Toggle the clock
 // #1 means wait for a delay of 1 timeunit
 always begin : CLOCK_GENERATION

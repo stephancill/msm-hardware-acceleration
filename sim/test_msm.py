@@ -14,6 +14,8 @@ def test_msm():
 
     x, y = msm.msm(points, scalars)
 
+    print(x, y)
+
     assert x == 16
     assert y == 25
 
@@ -56,4 +58,4 @@ def test_msm_pippenger():
 
 if __name__ == "__main__":
     test_msm()
-    test_msm_pippenger()
+    # test_msm_pippenger()

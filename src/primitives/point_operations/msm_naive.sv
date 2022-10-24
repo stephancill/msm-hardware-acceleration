@@ -18,14 +18,15 @@ logic [255:0] x_i;
 point_add                 p_add(.Reset(add_reset), .P(R_temp), .Q(R_mul_temp), .R(R_add_temp), .Done(add_done), .*);
 point_mul_double_and_add  p_mul(.Reset(mul_reset), .P(G_i), .k(x_i), .R(R_mul_temp), .Done(mul_done), .*);
 
-assign Done = counter == (length-1) && add_done && mul_done;
+assign Done = counter == (length+1) && add_done && mul_done;
+assign R = R_temp;
 
 // Clock and Reset
 always_ff @(posedge clk) begin
   if (Reset) begin
     Done <= 0;
     R_temp <= inf_point;
-    counter <= 0;
+    counter <= 1;
     add_reset <= 0;
     mul_reset <= 1;
     G_i <= G[0];
@@ -34,17 +35,18 @@ always_ff @(posedge clk) begin
     if (!Done) begin
       if (mul_reset) begin
         mul_reset <= 0;
-      end else if (add_reset) begin
-        add_reset <= 0;
-      end else if (mul_done) begin
         add_reset <= 1;
+      // end else if (add_reset) begin
+      //   add_reset <= 0;
+      end else if (mul_done && !add_done) begin
+        add_reset <= 0;
       end else if (add_done && mul_done) begin
-        // Mult done doesn't stay high when it's done
-        counter <= counter + 1;
+        $display("hello r_temp.x = %d", R_temp.x);
         mul_reset <= 1;
         R_temp <= R_add_temp;
         G_i <= G[counter];
         x_i <= x[counter];
+        counter <= counter + 1;
       end
     end
   end

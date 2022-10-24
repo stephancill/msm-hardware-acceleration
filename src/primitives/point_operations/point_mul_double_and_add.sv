@@ -8,8 +8,11 @@ module point_mul_double_and_add	(
 	output curve_point_t R
 );
 
+localparam width = 8;
+
 // 256-bit counter
 logic [$clog2(256)-1:0] counter;
+
 
 // Intermediate curve points
 curve_point_t R_add_temp, R_double_temp, R_temp, J;
@@ -17,7 +20,7 @@ curve_point_t R_add_temp, R_double_temp, R_temp, J;
 logic local_reset, add_done, double_done, should_add;
 
 assign should_add = k[counter];
-assign Done = counter == 5 && double_done && (add_done || !should_add); // TODO: Update this
+assign Done = counter == width && double_done && (add_done || !should_add); // TODO: Update this
 assign R = R_temp;
 
 // Double-and-add method
@@ -41,7 +44,7 @@ always_ff @ (posedge clk) begin
       local_reset <= 0;
     end else if (double_done & (add_done || ~should_add)) begin
       counter <= counter + 1;
-      local_reset <= 1;
+      local_reset <= 1 && (counter + 1 != width);
       J <= R_double_temp;
       if (should_add) begin
         R_temp <= R_add_temp;

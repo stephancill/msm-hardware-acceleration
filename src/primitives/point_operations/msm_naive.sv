@@ -39,6 +39,7 @@ always_ff @(posedge clk) begin
       end else if (mul_done) begin
         add_reset <= 1;
       end else if (add_done && mul_done) begin
+        // Mult done doesn't stay high when it's done
         counter <= counter + 1;
         mul_reset <= 1;
         R_temp <= R_add_temp;

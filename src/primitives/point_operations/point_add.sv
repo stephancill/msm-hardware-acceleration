@@ -58,6 +58,6 @@ module point_add (
 
 	assign R.x = P == inf_point ? Q.x : sum4;
 	assign R.y = P == inf_point ? Q.y : sum6;
-	assign Done = (mult0_done & inv_done & mult1_done & mult2_done) || (P == inf_point);
+	assign Done = (mult0_done & inv_done & mult1_done & mult2_done) || (P == inf_point && !Reset);
 
 endmodule

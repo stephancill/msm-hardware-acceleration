@@ -182,6 +182,10 @@ def ec_mul_projective2(x1, y1, z1, k, a, b, p):
         if k & (1 << i):
             x, y, z = ec_add_projective(x, y, z, xt, yt, zt, a, b, p)
         xt, yt, zt = ec_dbl_projective(xt, yt, zt, a, b, p)
+
+        # xa, ya = homogeneous_to_affine(x, y, z, p)
+        # xta, yta = homogeneous_to_affine(xt, yt, zt, p)
+        # print(f"i={i}, k={k}, x={xa}, y={ya} xt={xta}, yt={yta}")
     
     return x, y, z
 

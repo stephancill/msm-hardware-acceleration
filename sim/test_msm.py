@@ -4,6 +4,7 @@ import random
 import ecc
 import time
 import sys
+import os
 
 def test_msm():
     p = 37
@@ -60,6 +61,14 @@ def test_msm_pippenger():
     assert y == 31
 
 def test_msm_large():
+    # Ensure test directory exists
+    if not os.path.exists("test"):
+        os.mkdir("test")
+    else:
+        # Clear test directory
+        for file in os.listdir("test"):
+            os.remove(os.path.join("test", file))
+
     p = 0x01ae3a4617c510eac63b05c06ca1493b1a22d9f300f5138f1ef3622fba094800170b5d44300000008508c00000000001
     a = 0
     b = 0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001
@@ -72,17 +81,19 @@ def test_msm_large():
 
     print("Generator is on the curve!")
 
-    msm_length = 100
+    msm_length = 10
 
     # Generate random points and scalars
     points, scalars = generate_random_msm_data(p, a, b, Gx, Gy, msm_length)
 
     # Write points and scalars to file
-    with open("points.txt", "w") as f:
-        lines = []
-        for point, scalar in zip(points, scalars):
-            lines.append(f"{hex(scalar)} {hex(point[0])} {hex(point[1])}\n")
-        f.writelines(lines)
+    with open("test/test_Gx.txt", "w") as Gx_file:
+        with open("test/test_Gy.txt", "w") as Gy_file:
+            with open("test/test_x.txt", "w") as scalars_file:
+                for point, scalar in zip(points, scalars):
+                    Gx_file.write(f"{hex(point[0])[2:]}\n")
+                    Gy_file.write(f"{hex(point[1])[2:]}\n")
+                    scalars_file.write(f"{hex(scalar)[2:]}\n")
     
     # Compute the result using the naive algorithm
     msm = BaseMSM(a, b, p)
@@ -121,6 +132,12 @@ def test_msm_large():
     # Verify that the result is the same as the naive algorithm
     assert x == naive_x
     assert y == naive_y
+
+    with open("test/test_Rx.txt", "w") as Rx_file:
+        Rx_file.write(f"{hex(x)[2:]}\n")
+    
+    with open("test/test_Ry.txt", "w") as Ry_file:
+        Ry_file.write(f"{hex(y)[2:]}\n")
 
     print("Result is on the curve!")
     print(f"Pippenger's algorithm took {end - start} seconds")

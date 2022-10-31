@@ -6,15 +6,19 @@ timeunit 10ns;	// Half clock cycle at 50 MHz
 			// This is the amount of time represented by #1
 timeprecision 1ns;
 
-localparam length = 3;
+localparam MSM_LENGTH = 10;
 
 logic clk, Reset;
-logic [255:0] Rx, Ry;
-curve_point_t G [length-1:0];
-logic [255:0]	x [length-1:0];
+logic [P_WIDTH-1:0] Rx, Ry;
+logic [P_WIDTH-1:0] test_Rx [0:0];
+logic [P_WIDTH-1:0] test_Ry [0:0];
+logic [P_WIDTH-1:0] Gx [MSM_LENGTH-1:0];
+logic [P_WIDTH-1:0] Gy [MSM_LENGTH-1:0];
+curve_point_t G [MSM_LENGTH-1:0];
+logic [SCALAR_WIDTH-1:0] x [MSM_LENGTH-1:0];
 logic Done;
 
-msm_naive #(.length(length)) msm (.G(G), .x(x), .R({Rx, Ry}), .*);
+msm_naive #(.length(MSM_LENGTH)) msm (.G(G), .x(x), .R({Rx, Ry}), .*);
 // Toggle the clock
 // #1 means wait for a delay of 1 timeunit
 always begin : CLOCK_GENERATION
@@ -28,26 +32,29 @@ end
 //Testing
 initial begin: TEST_VECTORS
 //Initialize signals
-// points = [(6, 1), (17, 6), (5, 13)]
-// scalars = [18, 80, 17] # (24, 17), (13, 24), (19, 24)
-G[0].x = 6;
-G[0].y = 1;
-G[1].x = 17;
-G[1].y = 6;
-G[2].x = 5;
-G[2].y = 13;
+// 'test_Gx.txt' G.x
+// 'test_Gy.txt' G.y
+// 'text_x.txt' x
+// Each file has 100 lines, loop over them and use $readmemh to read them in
+$readmemh("test_Gx.txt", Gx);
+$readmemh("test_Gy.txt", Gy);
+$readmemh("test_x.txt", x);
+$readmemh("test_Rx.txt", test_Rx);
+$readmemh("test_Ry.txt", test_Ry);
 
-x[0] = 18;
-x[1] = 80;
-x[2] = 17;
+// Populate G
+for (int i = 0; i < MSM_LENGTH; i++) begin
+    G[i].x = Gx[i];
+    G[i].y = Gy[i];
+end
 
 Reset = 1'b1;
 #2 Reset = 1'b0;
 
 forever begin
     if (Done) begin
-        assert (Rx == 35);
-        assert (Ry == 6);
+        assert (Rx == test_Rx[0]);
+        assert (Ry == test_Ry[0]);
         $finish;
     end else
         #1;

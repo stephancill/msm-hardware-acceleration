@@ -182,9 +182,6 @@ def ec_mul_projective2(x1, y1, z1, k, a, b, p):
     z = 0
     
     for i in range(k.bit_length()):
-        xa, ya = homogeneous_to_affine(xt, yt, zt, p)
-        print(f"i={i} J = ({hex(xa), hex(ya)})")
-
         if k & (1 << i):
             x, y, z = ec_add_projective(x, y, z, xt, yt, zt, a, b, p)
         xt, yt, zt = ec_dbl_projective(xt, yt, zt, a, b, p)

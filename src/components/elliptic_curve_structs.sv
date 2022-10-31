@@ -1,6 +1,7 @@
 package elliptic_curve_structs;
 
 parameter P_WIDTH = 377;
+parameter SCALAR_WIDTH = 254;
 
 typedef struct packed {
   logic [P_WIDTH-1:0] x;

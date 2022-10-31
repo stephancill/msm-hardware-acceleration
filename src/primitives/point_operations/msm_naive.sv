@@ -3,7 +3,7 @@ import elliptic_curve_structs::*;
 module msm_naive #(parameter length = 256) (
 	input 	logic			clk, Reset,
 	input  	curve_point_t G [length-1:0],
-  input   logic [255:0]	x [length-1:0],
+  input   logic [SCALAR_WIDTH-1:0]	x [length-1:0],
 	output 	logic 			Done,
 	output 	curve_point_t 	R
 );
@@ -13,7 +13,7 @@ logic [$clog2(256)-1:0] counter;
 logic mul_reset, add_reset, add_done, mul_done;
 
 curve_point_t R_temp, R_add_temp, R_mul_temp, G_i;
-logic [255:0] x_i;
+logic [SCALAR_WIDTH-1:0] x_i;
 
 point_add                 p_add(.Reset(add_reset), .P(R_temp), .Q(R_mul_temp), .R(R_add_temp), .Done(add_done), .*);
 point_mul_double_and_add  p_mul(.Reset(mul_reset), .P(G_i), .k(x_i), .R(R_mul_temp), .Done(mul_done), .*);

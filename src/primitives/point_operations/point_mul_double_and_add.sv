@@ -8,7 +8,7 @@ module point_mul_double_and_add	(
 	output curve_point_t R
 );
 
-localparam width = 254;
+localparam width = SCALAR_WIDTH;
 
 // 256-bit counter
 logic [$clog2(width)-1:0] counter;

@@ -3,6 +3,7 @@
 from ffmath import Field
 import math
 
+# TODO: Fix montgomery
 class MontgomeryReduction(Field):
     
     def __init__(self, mod):

@@ -24,10 +24,14 @@ from ffmath import Field
 # 		t = (x - ((x * self.factor) >> self.shift) * mod)
 # 		return t if (t < mod) else (t - mod)
 class BarrettReduction(Field):
-    def __init__(self, p, n):
+    def __init__(self, p, n=None):
         super().__init__(p)
+        if n is None:
+            self.n = p.bit_length() * 2
+        else:
+            self.n = n
         self.p = p
-        self.n = n * 2 # 2x bit length of p
+        # self.n = n * 2 # 2x bit length of p
         self.r = (1 << self.n) // p # Precomputed factor floor(4^k / p)
 
     def ff_mul(self, a, b):

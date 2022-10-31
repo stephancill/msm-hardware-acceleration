@@ -1,5 +1,9 @@
 # Hardware Accelerator for zk-SNARKs
 
+## References
+
+Elliptic curve boilerplate - https://github.com/ljhsiun2/EllipticCurves_SystemVerilog
+
 ## Testing
 
 ```

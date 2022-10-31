@@ -3,15 +3,15 @@ import elliptic_curve_structs::*;
 module point_mul_double_and_add	(
 	input logic clk, Reset,
 	input curve_point_t  P,
-  input logic [255:0] k,
+  input logic [width-1:0] k,
 	output logic Done,
 	output curve_point_t R
 );
 
-localparam width = 8;
+localparam width = 254;
 
 // 256-bit counter
-logic [$clog2(256)-1:0] counter;
+logic [$clog2(width)-1:0] counter;
 
 
 // Intermediate curve points

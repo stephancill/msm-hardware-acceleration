@@ -1,5 +1,5 @@
 import math
-from base import BaseMultiplier
+from .base import BaseMultiplier
 from bitstring import BitArray
 import random
 
@@ -20,13 +20,13 @@ class Booth(BaseMultiplier):
         self.adder = BaseAdder()
 
     def mul(self, a, b):
-        return self.booth(a, b)
+        return self.booth(a, b, x=a.bit_length())
 
     def booth(self, m, r, x=129):
         # http://philosophyforprogrammers.blogspot.com/2011/05/booths-multiplication-algorithm-in.html
         # Initialize
         x = max(math.ceil(math.log2(r)), math.ceil(math.log2(m))) + 1
-        print("x", x)
+        # print("x", x)
         y = x
         totalLength = x + y + 1
         mA = BitArray(int = m, length = totalLength)
@@ -36,22 +36,22 @@ class Booth(BaseMultiplier):
         P = BitArray(int = r, length = y)
         P.prepend(BitArray(int = 0, length = x))
         P = P << 1
-        print ("Initial values")
-        print ("A", A.bin)
-        print ("S", S.bin)
-        print ("P", P.bin)
-        print ("Starting calculation")
+        # print ("Initial values")
+        # print ("A", A.bin)
+        # print ("S", S.bin)
+        # print ("P", P.bin)
+        # print ("Starting calculation")
         for _ in range(1,y+1):
             if P[-2:] == '0b01':
                 P = BitArray(int = self.adder.add(P.int, A.int), length = totalLength)
-                print ("P +  A:", P.bin)
+                # print ("P +  A:", P.bin)
             elif P[-2:] == '0b10':
                 P = BitArray(int = self.adder.add(P.int, S.int), length = totalLength)
-                print ("P +  S:", P.bin)
+                # print ("P +  S:", P.bin)
             P = BitArray(int=P.int // 2, length=totalLength) # Arithmetic shift right
-            print ("P >> 1:", P.bin)
+            # print ("P >> 1:", P.bin)
         P = BitArray(int=P.int // 2, length=totalLength) # Arithmetic shift right
-        print ("P >> 1:", P.bin)
+        # print ("P >> 1:", P.bin)
         return P.int
 
 

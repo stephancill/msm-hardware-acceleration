@@ -2,8 +2,8 @@ import elliptic_curve_structs::*;
 
 module modular_inverse (
 	input logic clk, Reset,
-	input logic [511:0] in,
-	output logic [255:0] out,
+	input logic [P_WIDTH*2-1:0] in,
+	output logic [P_WIDTH-1:0] out,
 	output logic Done
 );
 
@@ -17,8 +17,8 @@ module modular_inverse (
 
 	//Control Signals
 	logic u_load, v_load, g1_load, g2_load, status, count_load;
-	logic [511:0] u_in, u_out, g1_in, g1_out, g2_in, g2_out;
-	logic [511:0] v_in, v_out;
+	logic [P_WIDTH*2-1:0] u_in, u_out, g1_in, g1_out, g2_in, g2_out;
+	logic [P_WIDTH*2-1:0] v_in, v_out;
 	logic [10:0] count_in, count_out;
 
 	//State machine states
@@ -26,10 +26,10 @@ module modular_inverse (
 
 
 	//Register Instatntations
-	reg_256 #(512) u(.clk, .Load(u_load), .Data(u_in), .Out(u_out));
-	reg_256 #(512) v(.clk, .Load(v_load), .Data(v_in), .Out(v_out));
-	reg_256 #(512) g1(.clk, .Load(g1_load), .Data(g1_in), .Out(g1_out));
-	reg_256 #(512) g2(.clk, .Load(g2_load), .Data(g2_in), .Out(g2_out));
+	reg_256 #(P_WIDTH*2) u(.clk, .Load(u_load), .Data(u_in), .Out(u_out));
+	reg_256 #(P_WIDTH*2) v(.clk, .Load(v_load), .Data(v_in), .Out(v_out));
+	reg_256 #(P_WIDTH*2) g1(.clk, .Load(g1_load), .Data(g1_in), .Out(g1_out));
+	reg_256 #(P_WIDTH*2) g2(.clk, .Load(g2_load), .Data(g2_in), .Out(g2_out));
 
 	reg_256 #(11) counter(.clk, .Load(count_load), .Data(count_in), .Out(count_out));
 
@@ -53,7 +53,7 @@ module modular_inverse (
 			end
 			Start:
 			begin
-				if(u_out == 512'b01 || v_out == 512'b01)
+				if(u_out == 1 || v_out == 1)
 					Next_State = Wait;
 				else if(u_out[0] == 0)
 					Next_State = Check_u;
@@ -99,7 +99,7 @@ module modular_inverse (
 		v_load = 1'b0;
 		g1_load = 1'b0;
 		g2_load = 1'b0;
-		out = 256'b0;
+		out = 0;
 		Done = 1'b0;
 		count_load = 1'b1;
 		count_in = count_out + 1;
@@ -110,8 +110,8 @@ module modular_inverse (
 				u_in = in;
 				v_in = params.p;
 				Done = 1'b0;
-				g1_in = 512'b01;
-				g2_in = 512'b0;
+				g1_in = 1;
+				g2_in = 0;
 				u_load = 1'b1;
 				v_load = 1'b1;
 				g1_load = 1'b1;
@@ -141,7 +141,7 @@ module modular_inverse (
 					g2_in = g2_out >> 1;
 				else
 					g2_in = (g2_out + params.p) >> 1;
-				if(v_out != 512'b01 && v_out[0] == 0)
+				if(v_out != 1 && v_out[0] == 0)
 				begin
 					v_load = 1'b1;
 					g2_load = 1'b1;
@@ -172,10 +172,10 @@ module modular_inverse (
 			Finish:
 			begin
 				Done = 1'b1;
-				if(u_out == 512'b01)
-					out = g1_out[255:0];
+				if(u_out == 1)
+					out = g1_out[P_WIDTH-1:0];
 				else
-					out = g2_out[255:0];
+					out = g2_out[P_WIDTH-1:0];
 			end
 			default: ;
 		endcase

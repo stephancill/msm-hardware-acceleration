@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from multipliers.karatsuba import Karatsuba, BaseMultiplier
+from multipliers.booth import Booth
 
 class Field:
     def __init__(self, p):
@@ -18,14 +19,7 @@ class Field:
         return self.multiplier.mul(a, b)
 
     def mod(self, a):
-        v = a
-        if a < 0:
-            while v < self.p:
-                v = self.add(v, self.p)
-        
-        while v > self.p:
-                v = self.add(v, -self.p)
-        return v
+        return a % self.p
 
     def ff_mul(self, a, b):
         # alert if a or b is negative

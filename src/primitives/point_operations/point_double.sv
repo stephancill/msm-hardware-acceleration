@@ -8,13 +8,13 @@ module point_double	(
 );
 
 logic mult0_done, mult1_done, inv_done, mult2_done, mult3_done;
-logic[255:0] sum0, sum1, sum2, sum3, sum4, sum5;
-logic[255:0] inv1;
-logic[255:0] prod0, prod1, prod2, prod3;
+logic[P_WIDTH-1:0] sum0, sum1, sum2, sum3, sum4, sum5;
+logic[P_WIDTH-1:0] inv1;
+logic[P_WIDTH-1:0] prod0, prod1, prod2, prod3;
 // logic mult0_reset;
 // logic [4:0] counter;
 
-logic [255:0] temp_prod0;
+logic [P_WIDTH-1:0] temp_prod0;
 
 //s = Px + (Py / Px)
 //Rx = s*s + s
@@ -50,7 +50,7 @@ add add0(.a(P.x), .b(P.x),
 add add1(.a(P.x), .b(sum0), .op(1'b0), .sum(sum1)); // sum1 = 3*Px
 add add2(.a(P.y), .b(P.y), .op(1'b0), .sum(sum2)); // sum2 = 2*Py
 multiplier mult0(.clk, .Reset(Reset /* mult0_reset */), .a(P.x), .b(sum1), .Done(mult0_done), .product(prod0)); // prod0 = Px*sum1
-modular_inverse inv0(.clk, .Reset, .in({256'b0, sum2}), .out(inv1), .Done(inv_done));	// 1/2*Py
+modular_inverse inv0(.clk, .Reset, .in({{P_WIDTH{1'b0}}, sum2}), .out(inv1), .Done(inv_done));	// 1/2*Py
 multiplier mult1(.clk, .Reset(Reset | ~(inv_done && mult0_done)), .a(prod0), .b(inv1), .Done(mult1_done), .product(prod1)); // s
 
 /* To test for a != 0, put in line */

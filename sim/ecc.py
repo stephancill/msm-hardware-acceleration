@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
-from ffmath import Field
+# from ffmath import Field
+from field_arithmetic.barrett import BarrettReduction as Field
+# from field_arithmetic.montgomery import MontgomeryReduction as Field
 import libnum
 
 def ec_add_affine(x1, y1, x2, y2, a, b, p):
@@ -178,12 +180,17 @@ def ec_mul_projective2(x1, y1, z1, k, a, b, p):
     x = 0
     y = 1
     z = 0
+    
     for i in range(k.bit_length()):
+        xa, ya = homogeneous_to_affine(xt, yt, zt, p)
+        print(f"i={i} J = ({hex(xa), hex(ya)})")
+
         if k & (1 << i):
             x, y, z = ec_add_projective(x, y, z, xt, yt, zt, a, b, p)
         xt, yt, zt = ec_dbl_projective(xt, yt, zt, a, b, p)
 
         # xa, ya = homogeneous_to_affine(x, y, z, p)
+        # print(f"i={i} ({hex(xa), hex(ya)})")
         # xta, yta = homogeneous_to_affine(xt, yt, zt, p)
         # print(f"i={i}, k={k}, x={xa}, y={ya} xt={xta}, yt={yta}")
     

@@ -3,13 +3,13 @@ import elliptic_curve_structs::*;
 module point_mul	(
 	input logic clk, Reset,
 	input curve_point_t  P,
-  input logic [255:0] k,
+  input logic [P_WIDTH-1:0] k,
 	output logic Done,
 	output curve_point_t R
 );
 
 // 256-bit counter
-logic [255:0] counter;
+logic [P_WIDTH-1:0] counter;
 
 // Intermediate curves
 curve_point_t R_add_temp, R_double_temp, R_temp, Q;

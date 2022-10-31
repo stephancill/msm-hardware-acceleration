@@ -26,7 +26,7 @@ class Karatsuba(BaseMultiplier):
         high2 = b // k
         low2 = b % k
 
-        print(f"a={a}, b={b}, high1={high1}, low1={low1}, high2={high2}, low2={low2}")
+        # print(f"a={a}, b={b}, high1={high1}, low1={low1}, high2={high2}, low2={low2}")
         
         #/* 3 recursive calls made to numbers approximately half the size. */
         z0 = self.karatsuba (low1, low2)

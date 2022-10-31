@@ -2,21 +2,21 @@ import elliptic_curve_structs::*;
 
 module multiplier (
 	input 	logic 				clk, Reset,
-	input 	logic [255:0] 		a, b,
+	input 	logic [P_WIDTH-1:0] 		a, b,
 	output 	logic 				Done,
-	output 	logic [255:0] 		product
+	output 	logic [P_WIDTH-1:0] 		product
 );
 
 /* multiplication using bit shifting and adding */
 
-logic [255:0] a_in, a_out, count_in, count_out;
-logic [257:0] b_in, b_out,c_in, c_out;
+logic [P_WIDTH-1:0] a_in, a_out, count_in, count_out;
+logic [P_WIDTH+1:0] b_in, b_out,c_in, c_out;
 logic a_load, b_load, c_load, count_load;
 
-reg_256 a_reg(.clk, .Load(a_load), .Data(a_in), .Out(a_out));
-reg_256 #(258) b_reg(.clk, .Load(b_load), .Data(b_in), .Out(b_out));
-reg_256 #(258) c_reg(.clk, .Load(c_load), .Data(c_in), .Out(c_out));
-reg_256 #(256) count(.clk, .Load(count_load), .Data(count_in), .Out(count_out));
+reg_256 #(P_WIDTH) a_reg(.clk, .Load(a_load), .Data(a_in), .Out(a_out));
+reg_256 #(P_WIDTH+2) b_reg(.clk, .Load(b_load), .Data(b_in), .Out(b_out));
+reg_256 #(P_WIDTH+2) c_reg(.clk, .Load(c_load), .Data(c_in), .Out(c_out));
+reg_256 #(P_WIDTH) count(.clk, .Load(count_load), .Data(count_in), .Out(count_out));
 
 enum logic [2:0] {
 	Init, Start,
@@ -56,7 +56,7 @@ always_comb begin
 		end
 		setC:
 		begin
-			if(count_out == 8'd254)
+			if(count_out == P_WIDTH-2)
 				Next_State = Finish;
 			else
 				Next_State = setB;
@@ -75,7 +75,7 @@ always_comb begin
 	a_load = 1'b0;
 	b_load = 1'b0;
 	c_load = 1'b0;
-	product = 256'b0;
+	product = 0;
 	Done = 1'b0;
 
 	unique case(State)
@@ -85,7 +85,7 @@ always_comb begin
 			count_in = 8'b0;
 			a_in = a;
 			b_in = {2'b0, b};
-			c_in = 258'b0;
+			c_in = 0;
 
 			count_load = 1'b1;
 			a_load = 1'b1;
@@ -97,7 +97,7 @@ always_comb begin
 			if(a[0] == 1)
 				c_in = b_out;
 			else
-				c_in = 258'b0;
+				c_in = 0;
 			c_load = 1'b1;
 		end
 		setB:
@@ -141,7 +141,7 @@ always_comb begin
 			if(c_out < params.p)
 			begin
 				Done = 1'b1;
-				product = c_out[255:0];
+				product = c_out[P_WIDTH-1:0];
 			end
 			else
 			begin

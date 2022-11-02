@@ -18,17 +18,17 @@ class Field:
         self.multiplications += 1
         return self.multiplier.mul(a, b)
 
-    def mod(self, a):
+    def reduce(self, a):
         return a % self.p
 
     def ff_mul(self, a, b):
         # alert if a or b is negative
         if a < 0 or b < 0:
             print("WARNING: negative value in field multiplication")
-        return self.mod(self.mul(a, b))
+        return self.reduce(self.mul(a, b))
 
     def ff_add(self, a, b):
-        return self.mod(self.add(a, b))
+        return self.reduce(self.add(a, b))
 
     def __str__(self):
         return f"Field({self.p}) [mul={self.multiplications}, add={self.additions}]"

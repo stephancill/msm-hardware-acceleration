@@ -31,7 +31,7 @@
 
 module karat_mult_recursion_tb();
 
-parameter wI = 128;
+parameter wI = 512;
 parameter wO = 2 * wI;
 parameter nSTAGE = 5;
 parameter CLK_PERIOD = 10;

@@ -6,31 +6,18 @@ module MultiplierAdapter #(
 ) (
   input clk,
   input reset,
-  input signed [width-1:0] a,        // First multiplication element, a
-  input signed [width-1:0] b,        // Second multiplication element, b
+  input [width-1:0] a,        // First multiplication element, a
+  input [width-1:0] b,        // Second multiplication element, b
   input enable,
-  output signed [2*width-1:0] ab,         // Remainder, r
+  output [2*width-1:0] ab,         // Remainder, r
   output done
 );
 
   // Chosen multiplication module
-  // KaratsubaWrapper #(
-  //   .width         (width),
-  //   .stages     (2)
-  // )
-  // u_karatsuba_wrapper (
-  //   .a(a),
-  //   .b(b),
-  //   .ab(ab),
-  //   .clk(clk),
-  //   .reset(reset),
-  //   .enable(enable),
-  //   .done(done)
-  //   );
-
-  BoothWrapper #(
+  KaratsubaWrapper #(
     .width         (width)
-  ) u_booth_multiplier (
+  )
+  u_karatsuba_wrapper (
     .a(a),
     .b(b),
     .ab(ab),
@@ -39,5 +26,17 @@ module MultiplierAdapter #(
     .enable(enable),
     .done(done)
     );
+
+  // BoothWrapper #(
+  //   .width         (width)
+  // ) u_booth_multiplier (
+  //   .a(a),
+  //   .b(b),
+  //   .ab(ab),
+  //   .clk(clk),
+  //   .reset(reset),
+  //   .enable(enable),
+  //   .done(done)
+  //   );
   
 endmodule

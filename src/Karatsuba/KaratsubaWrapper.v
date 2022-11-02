@@ -1,32 +1,44 @@
 
 module KaratsubaWrapper #(
-  parameter width = 128, // width of the output
-  parameter stages = 5
+  parameter width = 128 // width of the output
 ) (
   input clk,
   input reset,
-  input signed [width-1:0] a,        // First multiplication element, a
-  input signed [width-1:0] b,        // Second multiplication element, b
+  input [width-1:0] a,        // First multiplication element, a
+  input [width-1:0] b,        // Second multiplication element, b
   input enable,
-  output signed [2*width-1:0] ab,         // Remainder, r
+  output [2*width-1:0] ab,         // Remainder, r
   output done
 );
 
-wire unsigned [width-1:0] a_abs, b_abs, ab_abs;
+localparam stages = $clog2(width) - 3;
+localparam localwidth = 2**$clog2(width);
 
-assign a_abs = a[width-1] ? -a : a; // First bit is sign bit
-assign b_abs = b[width-1] ? -b : b;
+wire [localwidth-1:0] a_local, b_local;
 
-assign ab = a[width-1] ^ b[width-1] ? -ab_abs : ab_abs;
+assign a_local = a;
+assign b_local = {{(localwidth-width){1'b0}}, b};
+
+// wire unsigned [width-1:0] a_abs, b_abs, ab_abs;
+
+// assign a_abs = a[width-1] ? -a : a; // First bit is sign bit
+// assign b_abs = b[width-1] ? -b : b;
+
+// assign ab = a[width-1] ^ b[width-1] ? -ab_abs : ab_abs;
+
+always @(clk) begin
+  if (reset)
+    $display("stages: %d, localwidth: %d", stages, localwidth);
+end
 
 karat_mult_recursion #(
-    .wI         (width),
+    .wI         (localwidth),
     .nSTAGE     (stages)
   )
   u_karat_mult_recursion (
-    .iX          (a_abs),
-    .iY          (b_abs),
-    .oO          (ab_abs),
+    .iX          (a_local),
+    .iY          (b_local),
+    .oO          (ab),
     .clk         (clk),
     .reset       (reset),
     .i_enable    (enable),

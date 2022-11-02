@@ -35,7 +35,6 @@ parameter nSTAGE = 2
 )
 (
 // data IOs
-// TODO: Implement naive mod method from simulation, negate answer based on xor of sign bit of a and b
 input   logic   [wI-1:0]    iX,
 input   logic   [wI-1:0]    iY,
 output  logic  [wO-1:0]    oO,

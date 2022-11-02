@@ -28,7 +28,7 @@ typedef struct packed {
 // };
 
 // BLS12-377
-curve_parameters_t params = '{
+parameter curve_parameters_t params = '{
   p: 377'h01ae3a4617c510eac63b05c06ca1493b1a22d9f300f5138f1ef3622fba094800170b5d44300000008508c00000000001,
   n: P_WIDTH,
   a: 377'd0,

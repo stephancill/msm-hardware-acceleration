@@ -24,25 +24,43 @@ from ffmath import Field
 # 		t = (x - ((x * self.factor) >> self.shift) * mod)
 # 		return t if (t < mod) else (t - mod)
 class BarrettReduction(Field):
-    def __init__(self, p, n=None):
+    
+    def __init__(self, p: int, n: int):
         super().__init__(p)
-        if n is None:
-            self.n = p.bit_length() * 2
-        else:
-            self.n = n
-        self.p = p
-        # self.n = n * 2 # 2x bit length of p
-        self.r = (1 << self.n) // p # Precomputed factor floor(4^k / p)
+        if p <= 0:
+            raise ValueError("Modulus must be positive")
+        if p & (p - 1) == 0:
+            raise ValueError("Modulus must not be a power of 2")
+        self.modulus = p
+        self.shift = n * 2
+        self.factor = (1 << self.shift) // p
+        print(f"Mask: {hex((1 << self.shift))}")
+        print(f"p: {hex(p)}")
+        print(f"Factor: {hex(self.factor)}")
+
+    # https://www.nayuki.io/res/barrett-reduction-algorithm/barrett-reducer.py
+    def reduce(self, x):
+        mod = self.modulus
+        assert 0 <= x < mod**2
+        
+        # t = (x - ((x * self.factor) >> self.shift) * mod)
+        # return t if (t < mod) else (t - mod)
+        # The above algorithm in single operation steps:
+        t1 = x * self.factor
+        print(f"t1: {hex(t1)}")
+        t2 = t1 >> self.shift
+        print(f"t2: {hex(t2)}")
+        t3 = t2 * mod
+        print(f"t3: {hex(t3)}")
+        t4 = x - t3
+        print(f"t4: {hex(t4)}")
+        r = t4 if (t4 < mod) else (t4 - mod)
+        return r
 
     def ff_mul(self, a, b):
         ab = self.mul(a, b) # 0 <= x <= p^2
+        return self.reduce(ab)
         
-        # Reduction
-        abr = self.mul(ab, self.r) # m1
-        abr_div4_k = abr >> self.n 
-        abr_div4_k_p = self.mul(abr_div4_k, self.p) # m2
-        t = self.add(ab, -abr_div4_k_p)
-        return t if (t < self.p) else (t - self.p)
 
 
 

@@ -44,9 +44,12 @@ module point_add (
 	add add1(.a(P.x), .b(Q.x), .op(1'b1), .sum(sum1));	// Px - Qx
 	modular_inverse inv0(.clk, .Reset, .in({{P_WIDTH{1'b0}}, sum1}), .out(inv1), .Done(inv_done)); //1/Px-Qx
 
-	multiplier mult0(.clk, .Reset(~inv_done | Reset), .a(sum0), .b(inv1), .Done(mult0_done), .product(s)); //slope
+	// multiplier mult0(.clk, .Reset(~inv_done | Reset), .a(sum0), .b(inv1), .Done(mult0_done), .product(s)); //slope
+  ModMul mult0(.clk, .reset(~inv_done | Reset), .a(sum0), .b(inv1), .enable(1'b1), .r(s), .done(mult0_done));
+  
+	// multiplier mult1(.clk, .Reset(~mult0_done | Reset), .a(s), .b(s), .Done(mult1_done), .product(prod2)); // s^2
+  ModMul mult1(.clk, .reset(~mult0_done | Reset), .a(s), .b(s), .enable(mult0_done), .r(prod2), .done(mult1_done));
 
-	multiplier mult1(.clk, .Reset(~mult0_done | Reset), .a(s), .b(s), .Done(mult1_done), .product(prod2)); // s^2
 	add add2(.a(P.x), .b(Q.x), .op(1'b0), .sum(sum3));	// Px + Qx
 	add add3(.a(prod2), .b(sum3), .op(1'b1), .sum(sum4)); // s^2 - (Px + Qx)
 	add add4(.a(P.x), .b(sum4), .op(1'b1), .sum(sum5));	// Px - Rx

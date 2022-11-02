@@ -62,77 +62,65 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-module tb_Booth_Multiplier;
+import elliptic_curve_structs::*;
 
-parameter N = 7;
+module tb_Booth_Multiplier();
+
+parameter p = params.p;
 parameter CLK_PERIOD = 10;
 
-//  UUT Signals
+logic   [P_WIDTH-1:0]    a, b;
+logic  [P_WIDTH-1:0]    r_ref, r;
+logic [P_WIDTH*2-1:0] ab, ab_ref;
+assign ab_ref = a * b;
 
-reg     Rst;
-reg     Clk;
-
-reg     Ld;
-reg     [(2**N - 1):0] M;
-reg     [(2**N - 1):0] R;
-
-wire    Valid;
-wire    [(2**(N+1) - 1):0] P, P_ref;
-assign P_ref = M * R;
-
-
-// Instantiate the Unit Under Test (UUT)
-
-Booth_Multiplier    #(
-    .pN(N)
-  ) uut (
-    .Rst(Rst), 
-    .Clk(Clk), 
-    .Ld(Ld), 
-    .M(M), 
-    .R(R), 
-    .Valid(Valid), 
-    .P(P)
-  );
+logic   clk, reset, i_enable, done;
 
 initial begin
-    // Initialize Inputs
-  Rst = 1;
-  Clk = 1;
-  Ld  = 0;
-  M   = 0;
-  R   = 0;
- 
-
-  // Wait 100 ns for global reset to finish
-  #(CLK_PERIOD*10) Rst = 0;
-  
-  // Add stimulus here
-  #CLK_PERIOD Ld = 1'b1;
-
-  M = 128'd123;
-  R = 128'd456;
-
-  #(CLK_PERIOD*2) Ld = 1'b0;
-
-  forever begin
-    if (Valid) begin
-      if (P == P_ref) begin
-        $display("PASS: P == P_ref");
-      end else begin
-        $display("ERROR: P != P_ref");
-      end
-      $finish();
-    end 
+    clk = 1'b1;
     #CLK_PERIOD;
-  end
-    
+    forever begin
+        clk = ~clk;
+        #(CLK_PERIOD/2);
+    end
 end
 
-///////////////////////////////////////////////////////////////////////////////
+initial begin
+  i_enable = 1'b0;
+  #(CLK_PERIOD*5);
+  a = 377'h1647170e013bf53a7b050468f43383b17361703bef0431b3f0f3ddad4af519168f4af9b29e96740671f4fbb2b93eb11;
+  b = 377'h144b5478f0886377ee7fe272cd4ca5a12f1e38816016588cffe3240b0776a00199763223e90b4b30d4f21c3d098f416;
+  
+  #CLK_PERIOD;
+  reset = 1'b1;
+  #CLK_PERIOD;
+  reset = 1'b0;
+  i_enable = 1'b1;
 
-always #CLK_PERIOD Clk = ~Clk;
-      
-///////////////////////////////////////////////////////////////////////////////
+ forever begin
+   if (done) begin
+       if (ab == ab_ref) begin
+           $display("PASS: r == r_re");
+            
+       end else
+       begin
+           $display("ERROR: r != r_re");
+       end
+       $finish();
+   end 
+   #CLK_PERIOD;
+ end
+end
+
+BoothWrapper #(
+    .width         (P_WIDTH)
+  ) u_booth_multiplier (
+    .a(a),
+    .b(b),
+    .ab(ab),
+    .clk(clk),
+    .reset(reset),
+    .done(done)
+    );
 
 endmodule

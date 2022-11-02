@@ -13,13 +13,13 @@ def test_barrett_reduction():
     
     assert r == a % p
 
-    a = random.randint(2**(n-1), p)
-    print(f"a: {hex(a)}")
-    b = random.randint(2**(n-1), p)
-    print(f"b: {hex(b)}")
-    r = field.ff_mul(a, b)
-    print(f"r: {hex(r)}")
-    assert r == a * b % p
+    # a = random.randint(2**(n-1), p)
+    # print(f"a: {hex(a)}")
+    # b = random.randint(2**(n-1), p)
+    # print(f"b: {hex(b)}")
+    # r = field.ff_mul(a, b)
+    # print(f"r: {hex(r)}")
+    # assert r == a * b % p
 
 def test_montgomery_reduction():
     field = MontgomeryReduction(65521)

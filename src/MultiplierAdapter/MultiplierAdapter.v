@@ -9,7 +9,7 @@ module MultiplierAdapter #(
   input [width-1:0] a,        // First multiplication element, a
   input [width-1:0] b,        // Second multiplication element, b
   input enable,
-  output [2*width-1:0] ab,         // Remainder, r
+  output [2*width-1:0] ab,  
   output done
 );
 
@@ -34,8 +34,8 @@ module MultiplierAdapter #(
   //   .b(b),
   //   .ab(ab),
   //   .clk(clk),
-  //   .reset(reset),
   //   .enable(enable),
+  //   .reset(reset),
   //   .done(done)
   //   );
   

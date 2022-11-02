@@ -25,14 +25,14 @@ from ffmath import Field
 # 		return t if (t < mod) else (t - mod)
 class BarrettReduction(Field):
     
-    def __init__(self, p: int, n: int):
+    def __init__(self, p: int, n: int=None):
         super().__init__(p)
         if p <= 0:
             raise ValueError("Modulus must be positive")
         if p & (p - 1) == 0:
             raise ValueError("Modulus must not be a power of 2")
         self.modulus = p
-        self.shift = n * 2
+        self.shift = n * 2 if n else p.bit_length() * 2
         self.factor = (1 << self.shift) // p
         print(f"Mask: {hex((1 << self.shift))}")
         print(f"p: {hex(p)}")

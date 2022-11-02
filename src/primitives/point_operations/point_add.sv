@@ -54,7 +54,9 @@ module point_add (
 	add add3(.a(prod2), .b(sum3), .op(1'b1), .sum(sum4)); // s^2 - (Px + Qx)
 	add add4(.a(P.x), .b(sum4), .op(1'b1), .sum(sum5));	// Px - Rx
 	add add5(.a(prod3), .b(P.y), .op(1'b1), .sum(sum6)); // s(Px-Rx) - Py
-	multiplier mult2(.clk, .Reset(~reset2 | Reset), .a(s), .b(sum5), .Done(mult2_done), .product(prod3)); //s(Px - Rx)
+	
+  // multiplier mult2(.clk, .Reset(~reset2 | Reset), .a(s), .b(sum5), .Done(mult2_done), .product(prod3)); //s(Px - Rx)
+  ModMul mult2(.clk, .reset(~reset2 | Reset), .a(s), .b(sum5), .enable(mult1_done), .r(prod3), .done(mult2_done));
 	/* to use a nonzero a, uncomment below line and replace all "sum4" with "sum8" */
 	//add #(17) add7(.a(sum4), .b({254'b0, 2'b10}), .op(1'b0), .sum(sum8)); // Rx + a (for x^3 + 2x + 2, a is 2)
 

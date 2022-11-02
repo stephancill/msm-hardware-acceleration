@@ -208,6 +208,19 @@ def generate_point_multiplication_test_case():
     print(f"k = {hex(k)}")
     print(f"kP = ({hex(kX)}, {hex(kY)})")
 
+def test_point_double():
+    p = 0x01ae3a4617c510eac63b05c06ca1493b1a22d9f300f5138f1ef3622fba094800170b5d44300000008508c00000000001
+    a = 0
+    b = 0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001
+
+    Px = 0x116a2c0f839d9608121202ed49d41a2fb23252aa7ae75c60ad61d9cf807e53ff10ba3ff99bf43ff6c8bfbbc6528a33b
+    Py = 0x10bd644104333b1a8dbdf058a5136c194b1ff7e9731969156a8c4dfd46446cd5d93a2de3130da01999d9072585ff593
+
+    xp, yp, zp = ecc.ec_add_projective(Px, Py, 1, Px, Py, 1, a, b, p)
+    X, Y = ecc.homogeneous_to_affine(xp, yp, zp, p)
+
+    print(f"P = ({hex(X)}, {hex(Y)})")
+
 if __name__ == "__main__":
     # test_ec_add_affine()
     # test_ec_add_projective()
@@ -217,4 +230,5 @@ if __name__ == "__main__":
     # test_ec_mul_projective2()
     # generate_point_add_test_case()
     # generate_point_multiplication_test_case()
-    generate_point_multiplication_test_case()
+    # generate_point_multiplication_test_case()
+    test_point_double()

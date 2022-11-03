@@ -3,6 +3,7 @@
 import math
 import ecc
 import random
+import os
 
 def test_ec_add_projective():
     p = 37
@@ -182,6 +183,60 @@ def generate_point_add_test_case():
     print(f"P2 = ({hex(X2)}, {hex(Y2)})")
     print(f"P1 + P2 = ({hex(X3)}, {hex(Y3)})")
 
+def generate_point_add_test_case_multiple():
+    # Ensure test/padd directory exists
+    test_path = os.path.join("test", "padd")
+    if not os.path.exists(test_path):
+        os.mkdir(test_path)
+    else:
+        # Clear test directory
+        for file in os.listdir(test_path):
+            os.remove(os.path.join(test_path, file))
+
+    p = 0x01ae3a4617c510eac63b05c06ca1493b1a22d9f300f5138f1ef3622fba094800170b5d44300000008508c00000000001
+    a = 0
+    b = 0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001
+
+    Gx = 0x008848defe740a67c8fc6225bf87ff5485951e2caa9d41bb188282c8bd37cb5cd5481512ffcd394eeab9b16eb21be9ef
+    Gy = 0x01914a69c5102eff1f674f5d30afeec4bd7fb348ca3e52d96d182ad44fb82305c2fe3d3634a9591afd82de55559c8ea6
+
+    length = 100
+
+    test_cases = []
+
+    for _ in range(length):
+        k = random.randint(1, p - 1)
+        xp, yp, zp = ecc.ec_mul_projective2(Gx, Gy, 1, k, a, b, p)
+        X1, Y1 = ecc.homogeneous_to_affine(xp, yp, zp, p)
+
+        k = random.randint(1, p - 1)
+        xp, yp, zp = ecc.ec_mul_projective2(Gx, Gy, 1, k, a, b, p)
+        X2, Y2 = ecc.homogeneous_to_affine(xp, yp, zp, p)
+
+        # Add the two points
+        xp, yp, zp = ecc.ec_add_projective(X1, Y1, 1, X2, Y2, 1, a, b, p)
+        X3, Y3 = ecc.homogeneous_to_affine(xp, yp, zp, p)
+
+        test_cases.append((X1, Y1, X2, Y2, X3, Y3))
+
+        # Print out the test case
+        # print(f"P1 = ({hex(X1)}, {hex(Y1)})")
+        # print(f"P2 = ({hex(X2)}, {hex(Y2)})")
+        # print(f"P1 + P2 = ({hex(X3)}, {hex(Y3)})")
+
+    # Write test cases to files: X1 -> test_Px.txt, Y1 -> test_Py.txt, X2 -> test_Qx.txt, Y2 -> test_Qy.txt, X3 -> test_Rx.txt, Y3 -> test_Ry.txt
+    file_mapping = ["test_Px.txt", "test_Py.txt", "test_Qx.txt", "test_Qy.txt", "test_Rx.txt", "test_Ry.txt"]
+    files = [open(os.path.join(test_path, file), "w") for file in file_mapping]
+    for test_case in test_cases:
+        for n, file in zip(test_case, files):
+            file.write(f"{hex(n)[2:]}\n")
+    
+    # Close files
+    for file in files:
+        file.close()
+        
+
+
 def generate_point_multiplication_test_case():
     p = 0x01ae3a4617c510eac63b05c06ca1493b1a22d9f300f5138f1ef3622fba094800170b5d44300000008508c00000000001
     a = 0
@@ -202,6 +257,9 @@ def generate_point_multiplication_test_case():
     # Multiply the point by k
     xp, yp, zp = ecc.ec_mul_projective2(Gx, Gy, 1, k, a, b, p)
     kX, kY = ecc.homogeneous_to_affine(xp, yp, zp, p)
+
+    # Verify that the point is on the curve
+    assert (kY ** 2 - kX ** 3 - a * kX - b) % p == 0
 
     # Print out the test case
     print(f"P = ({hex(X)}, {hex(Y)})")
@@ -230,5 +288,5 @@ if __name__ == "__main__":
     # test_ec_mul_projective2()
     # generate_point_add_test_case()
     # generate_point_multiplication_test_case()
-    # generate_point_multiplication_test_case()
-    test_point_double()
+    generate_point_add_test_case_multiple()
+    # test_point_double()

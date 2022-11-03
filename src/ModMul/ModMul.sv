@@ -1,5 +1,4 @@
 // Source: https://github.com/ingonyama-zk/papers/blob/main/modular_multiplication.pdf
-`timescale 1ns/1ps
 module ModMul (
   input logic clk,
   input logic reset,
@@ -12,14 +11,16 @@ module ModMul (
 
   // Option 1:
 
-  logic mul_done, reset_reducer, enable_reducer;
+  logic mul_done, reduction_done;
   logic [2*P_WIDTH-1:0] ab;
+
+  assign done = mul_done & reduction_done;
 
   ModReductionAdapter u_mod_reduction (
       .clk(clk),
-      .reset(reset_reducer),
+      .reset(reset | ~mul_done),
       .a(ab),
-      .done(done),
+      .done(reduction_done),
       .r(r)
   );
 
@@ -34,20 +35,6 @@ module ModMul (
     .ab(ab),
     .done(mul_done)
   );
-
-  always @(posedge clk) begin
-    if (reset) begin
-      reset_reducer <= 0;
-      enable_reducer <= 0;
-    end else begin
-      if (mul_done && !enable_reducer) begin
-        reset_reducer <= 1;
-        enable_reducer <= 1;
-      end else begin
-        reset_reducer <= 0;
-      end
-    end
-  end
 
   // -------------------------------------------------
 

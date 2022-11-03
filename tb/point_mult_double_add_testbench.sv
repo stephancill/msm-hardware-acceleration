@@ -1,4 +1,4 @@
-//openssl ec -in ecprivkey.pem -pubout -out ecpubkey.pem
+import elliptic_curve_structs::*;
 module point_mult_double_add_testbench();
 
 timeunit 10ns;	// Half clock cycle at 50 MHz

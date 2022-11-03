@@ -21,6 +21,17 @@ def test_barrett_reduction():
     # print(f"r: {hex(r)}")
     # assert r == a * b % p
 
+def test_barrett_reduction_edge_case():
+    p = 0x01ae3a4617c510eac63b05c06ca1493b1a22d9f300f5138f1ef3622fba094800170b5d44300000008508c00000000001
+    n = 377
+    field = BarrettReduction(p, n)
+    a = 0x122ab2da99a50bd398418159f740ee6ed1b2aed659e6b75e1a1c2ff25b5c180f7ea86577c4a0e7583e6ad0b14a729e3fe1fb6afd654254af8507711c8c9d03c433b5ff35c001d5ef94ab52ee6e9f37c0a5758f3d122bed519562a6f3a8561
+    r = field.reduce(a)
+    print(hex(r))
+    print(hex(a % p))
+    
+    assert r == a % p
+
 def test_montgomery_reduction():
     field = MontgomeryReduction(65521)
     a = 64111
@@ -28,4 +39,4 @@ def test_montgomery_reduction():
     assert field.ff_mul(a, b) == a * b % field.s
 
 if __name__ == "__main__":
-    test_barrett_reduction()
+    test_barrett_reduction_edge_case()

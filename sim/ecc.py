@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-# from ffmath import Field
-from field_arithmetic.barrett import BarrettReduction as Field
+from ffmath import Field
+# from field_arithmetic.barrett import BarrettReduction as Field
 # from field_arithmetic.montgomery import MontgomeryReduction as Field
 import libnum
 
@@ -184,10 +184,12 @@ def ec_mul_projective2(x1, y1, z1, k, a, b, p):
     for i in range(k.bit_length()):
         if k & (1 << i):
             x, y, z = ec_add_projective(x, y, z, xt, yt, zt, a, b, p)
+            # xa, ya = homogeneous_to_affine(x, y, z, p)
+            # print(f"i={i} ({hex(xa), hex(ya)})")
         xt, yt, zt = ec_dbl_projective(xt, yt, zt, a, b, p)
-
-        # xa, ya = homogeneous_to_affine(x, y, z, p)
-        # print(f"i={i} ({hex(xa), hex(ya)})")
+        # xa, ya = homogeneous_to_affine(xt, yt, zt, p)
+        # print(f"J: i={i} ({hex(xa), hex(ya)})")
+        
         # xta, yta = homogeneous_to_affine(xt, yt, zt, p)
         # print(f"i={i}, k={k}, x={xa}, y={ya} xt={xta}, yt={yta}")
     
@@ -197,6 +199,9 @@ def homogeneous_to_affine(x, y, z, p):
     """
     Convert a point on an elliptic curve in homogeneous coordinates to affine coordinates.
     """
+    if x == 0 and y == 1 and z == 0:
+        return 0, 0
+
     z_inv = libnum.invmod(z, p)
     x = (x * z_inv) % p
     y = (y * z_inv) % p

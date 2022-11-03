@@ -15,7 +15,7 @@ logic enable, m1_done, m2_done, sub_done;
 logic [3*P_WIDTH-1:0] t1; // a * q
 logic [P_WIDTH-1:0] t2;
 logic [2*P_WIDTH-1:0] t3; // t2 * p
-logic [P_WIDTH-1:0] t4;
+logic [P_WIDTH:0] t4;
 
 assign t2 = t1 >> (2*P_WIDTH);
 
@@ -51,7 +51,6 @@ always_ff @( clk ) begin
     t4 <= 0;
     sub_done <= 0;
     done <= 0;
-    $display("p = %h", params.p);
   end else begin
     if (!done) begin
       if (m2_done && m1_done) begin

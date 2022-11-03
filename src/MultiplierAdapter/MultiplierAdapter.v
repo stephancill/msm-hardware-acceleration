@@ -14,29 +14,29 @@ module MultiplierAdapter #(
 );
 
   // Chosen multiplication module
-  KaratsubaWrapper #(
-    .width         (width)
-  )
-  u_karatsuba_wrapper (
-    .a(a),
-    .b(b),
-    .ab(ab),
-    .clk(clk),
-    .reset(reset),
-    .enable(enable),
-    .done(done)
-    );
-
-  // BoothWrapper #(
+  // KaratsubaWrapper #(
   //   .width         (width)
-  // ) u_booth_multiplier (
+  // )
+  // u_karatsuba_wrapper (
   //   .a(a),
   //   .b(b),
   //   .ab(ab),
   //   .clk(clk),
-  //   .enable(enable),
   //   .reset(reset),
+  //   .enable(enable),
   //   .done(done)
   //   );
+
+  BoothWrapper #(
+    .width         (width)
+  ) u_booth_multiplier (
+    .a(a),
+    .b(b),
+    .ab(ab),
+    .clk(clk),
+    .enable(enable),
+    .reset(reset),
+    .done(done)
+    );
   
 endmodule

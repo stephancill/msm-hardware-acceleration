@@ -29,6 +29,7 @@ module point_add (
 		if(Reset) begin
 			counter <= 0;
 			reset2 <= 1'b0;
+      Done <= 0;
 		end
 
 		else
@@ -37,6 +38,23 @@ module point_add (
 				counter <= counter + 1'b1;
 			if(counter > 5)
 				reset2 <= 1'b1;
+
+      if (sum1 == 0) begin
+        Done <= 1;
+        R <= inf_point;
+      end 
+      
+      if (Q && P == inf_point) begin
+        Done <= 1;
+        R <= Q;
+      end else if (P && Q == inf_point) begin
+        Done <= 1;
+        R <= P;
+      end else if (mult0_done & inv_done & mult1_done & mult2_done) begin
+        Done <= 1;
+        R.x <= sum4;
+        R.y <= sum6;
+      end
 		end
 	end
 
@@ -61,8 +79,8 @@ module point_add (
 	//add #(17) add7(.a(sum4), .b({254'b0, 2'b10}), .op(1'b0), .sum(sum8)); // Rx + a (for x^3 + 2x + 2, a is 2)
 
 
-	assign R.x = P == inf_point ? Q.x : sum4;
-	assign R.y = P == inf_point ? Q.y : sum6;
-	assign Done = (mult0_done & inv_done & mult1_done & mult2_done) || (P == inf_point && !Reset);
+	// assign R.x = P == inf_point ? Q.x : sum4;
+	// assign R.y = P == inf_point ? Q.y : sum6;
+	// assign Done = (mult0_done & inv_done & mult1_done & mult2_done) || (P == inf_point && !Reset);
 
 endmodule

@@ -279,6 +279,19 @@ def test_point_double():
 
     print(f"P = ({hex(X)}, {hex(Y)})")
 
+def test_adding_edge_case():
+    p = 37
+    a = 0
+    b = 7
+
+    Px, Py = (24, 20)
+    Qx, Qy = (24, 17)
+
+    xp, yp, zp = ecc.ec_add_projective(Px, Py, 1, Qx, Qy, 1, a, b, p)
+    X, Y = ecc.homogeneous_to_affine(xp, yp, zp, p)
+
+    print(f"P = ({hex(X)}, {hex(Y)})")
+
 if __name__ == "__main__":
     # test_ec_add_affine()
     # test_ec_add_projective()
@@ -288,5 +301,6 @@ if __name__ == "__main__":
     # test_ec_mul_projective2()
     # generate_point_add_test_case()
     # generate_point_multiplication_test_case()
-    generate_point_add_test_case_multiple()
+    # generate_point_add_test_case_multiple()
     # test_point_double()
+    test_adding_edge_case()

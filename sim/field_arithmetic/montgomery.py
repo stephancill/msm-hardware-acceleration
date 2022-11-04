@@ -3,7 +3,6 @@
 from ffmath import Field
 import math
 
-# TODO: Fix montgomery
 class MontgomeryReduction(Field):
     
     def __init__(self, mod):
@@ -16,6 +15,7 @@ class MontgomeryReduction(Field):
         
         # Reducer
         self.reducerbits = (mod.bit_length() // 8 + 1) * 8  # This is a multiple of 8
+        
         self.reducer = 1 << self.reducerbits  # This is a power of 256
         self.mask = self.reducer - 1
         assert self.reducer > mod and math.gcd(self.reducer, mod) == 1
@@ -24,17 +24,6 @@ class MontgomeryReduction(Field):
         self.reciprocal = MontgomeryReduction.reciprocal_mod(self.reducer % mod, mod)
         self.factor = (self.reducer * self.reciprocal - 1) // mod
         self.convertedone = self.reducer % mod
-    
-    
-    # The range of x is unlimited
-    def convert_in(self, x):
-        return (x << self.reducerbits) % self.modulus
-    
-    
-    # The range of x is unlimited
-    def convert_out(self, x):
-        return (x * self.reciprocal) % self.modulus
-    
     
     # Inputs and output are in Montgomery form and in the range [0, modulus)
     def multiply(self, x, y):
@@ -49,7 +38,24 @@ class MontgomeryReduction(Field):
     
     def ff_mul(self, a, b):
         return self.multiply(a, b)
+
+    def reduce(self, ab):
+        product = self.convert_in(ab) * self.convert_in(1)
+        mod = self.modulus
+        temp = ((product & self.mask) * self.factor) & self.mask
+        reduced = (product + temp * mod) >> self.reducerbits
+        result = reduced if (reduced < mod) else (reduced - mod)
+        assert 0 <= result < mod
+        return self.convert_out(result)
     
+    # The range of x is unlimited
+    def convert_in(self, x: int) -> int:
+        return (x << self.reducerbits) % self.modulus
+        # Compute the above using bit shifts and multiplications
+    
+    # The range of x is unlimited
+    def convert_out(self, x: int) -> int:
+        return (x * self.reciprocal) % self.modulus
     
     # Input x (base) and output (power) are in Montgomery form and in the range [0, modulus); input y (exponent) is in standard form
     def pow(self, x, y):

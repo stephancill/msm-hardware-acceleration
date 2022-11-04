@@ -34,9 +34,9 @@ class BarrettReduction(Field):
         self.modulus = p
         self.shift = n * 2 if n else p.bit_length() * 2
         self.factor = (1 << self.shift) // p
-        print(f"Mask: {hex((1 << self.shift))}")
-        print(f"p: {hex(p)}")
-        print(f"Factor: {hex(self.factor)}")
+        # print(f"Mask: {hex((1 << self.shift))}")
+        # print(f"p: {hex(p)}")
+        # print(f"Factor: {hex(self.factor)}")
 
     # https://www.nayuki.io/res/barrett-reduction-algorithm/barrett-reducer.py
     def reduce(self, x):

@@ -11,8 +11,10 @@ module KaratsubaWrapper #(
   output done
 );
 
-localparam stages = $clog2(width) - 3;
+localparam target_width = 8;
+localparam stages = $clog2(width/target_width);
 localparam localwidth = 2**$clog2(width);
+
 
 wire [localwidth-1:0] a_local, b_local;
 
@@ -25,11 +27,6 @@ assign b_local = {{(localwidth-width){1'b0}}, b};
 // assign b_abs = b[width-1] ? -b : b;
 
 // assign ab = a[width-1] ^ b[width-1] ? -ab_abs : ab_abs;
-
-always @(clk) begin
-  if (reset)
-    $display("stages: %d, localwidth: %d", stages, localwidth);
-end
 
 karat_mult_recursion #(
     .wI         (localwidth),

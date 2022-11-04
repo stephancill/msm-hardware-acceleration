@@ -1,7 +1,16 @@
 package elliptic_curve_structs;
 
-parameter P_WIDTH = 377;
-parameter SCALAR_WIDTH = 254;
+// BLS12-381 curve parameters
+// parameter P_WIDTH = 377;
+// parameter SCALAR_WIDTH = 254;
+
+// 32-bit curve parameters
+// parameter P_WIDTH = 32;
+// parameter SCALAR_WIDTH = 32;
+
+// 8-bit curve parameters
+parameter P_WIDTH = 6;
+parameter SCALAR_WIDTH = 6;
 
 typedef struct packed {
   logic [P_WIDTH-1:0] x;
@@ -19,25 +28,34 @@ typedef struct packed {
 } curve_parameters_t;
 
 // - Small parameters
-// curve_parameters_t params = '{
-//   p: 37,
+parameter curve_parameters_t params = '{
+  p: 37,
+  n: P_WIDTH,
+  a: 0,
+  b: 7,
+	base_point:'{6, 1}
+};
+
+// - 32-bit parameters
+// parameter curve_parameters_t params = '{
+//   p: 4294967291,
 //   n: P_WIDTH,
 //   a: 0,
-//   b: 7,
-// 	base_point:'{6, 1}
+//   b: 1,
+// 	base_point:'{3, 752522715}
 // };
 
 // BLS12-377
-parameter curve_parameters_t params = '{
-  p: 377'h01ae3a4617c510eac63b05c06ca1493b1a22d9f300f5138f1ef3622fba094800170b5d44300000008508c00000000001,
-  n: P_WIDTH,
-  a: 377'd0,
-  b: 377'd1,
-	base_point:'{
-    x: 377'h008848defe740a67c8fc6225bf87ff5485951e2caa9d41bb188282c8bd37cb5cd5481512ffcd394eeab9b16eb21be9ef, 
-    y: 377'h01914a69c5102eff1f674f5d30afeec4bd7fb348ca3e52d96d182ad44fb82305c2fe3d3634a9591afd82de55559c8ea6
-  }
-};
+// parameter curve_parameters_t params = '{
+//   p: 377'h01ae3a4617c510eac63b05c06ca1493b1a22d9f300f5138f1ef3622fba094800170b5d44300000008508c00000000001,
+//   n: P_WIDTH,
+//   a: 377'd0,
+//   b: 377'd1,
+// 	base_point:'{
+//     x: 377'h008848defe740a67c8fc6225bf87ff5485951e2caa9d41bb188282c8bd37cb5cd5481512ffcd394eeab9b16eb21be9ef, 
+//     y: 377'h01914a69c5102eff1f674f5d30afeec4bd7fb348ca3e52d96d182ad44fb82305c2fe3d3634a9591afd82de55559c8ea6
+//   }
+// };
 
 typedef struct packed {
     logic m;            // m = 1 for secp256k1

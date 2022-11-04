@@ -199,12 +199,13 @@ def homogeneous_to_affine(x, y, z, p):
     """
     Convert a point on an elliptic curve in homogeneous coordinates to affine coordinates.
     """
-    if x == 0 and y == 1 and z == 0:
-        return 0, 0
 
-    z_inv = libnum.invmod(z, p)
-    x = (x * z_inv) % p
-    y = (y * z_inv) % p
+    try:
+        z_inv = libnum.invmod(z, p)
+        x = (x * z_inv) % p
+        y = (y * z_inv) % p
+    except:
+        return 0, 0
     
     return x, y
 

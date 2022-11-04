@@ -19,7 +19,14 @@ class BaseMSM:
 
         for point, scalar in zip(points, scalars):
             x, y, z = ecc.ec_mul_projective2(point[0], point[1], 1, scalar, self.a, self.b, self.p)
+
+            __x, __y = ecc.homogeneous_to_affine(rx, ry, rz, self.p)
+            __x2, __y2 = ecc.homogeneous_to_affine(x, y, z, self.p)
+            
+
             rx, ry, rz = ecc.ec_add_projective(rx, ry, rz, x, y, z, self.a, self.b, self.p)
+            __x3, __y3 = ecc.homogeneous_to_affine(rx, ry, rz, self.p)
+            print(f"Mul Result = ({__x2}, {__y2}) + P = ({__x}, {__y}) = ({__x3}, {__y3})" )
 
         # Convert to affine coordinates
         rx, ry = ecc.homogeneous_to_affine(rx, ry, rz, self.p)

@@ -40,15 +40,15 @@ def test_msm_pippenger():
 
     print(f"msm: {msm}")
 
-    points = [(6, 1), (17, 6)]
-    scalars = [18, 80] # (24, 17), (13, 24)
+    points = [(6, 1), (17, 6), (5, 13)]
+    scalars = [18, 80, 17] # (24, 17), (13, 24), (19, 24)
 
     x, y = msm.msm(points, scalars)
 
     print(x, y)
 
-    assert x == 16
-    assert y == 25
+    assert x == 35
+    assert y == 6
 
     points = [(6, 1), (5, 13)]
     scalars = [18, 80] # (24, 17), (16, 25)
@@ -67,14 +67,29 @@ def test_msm_large():
     else:
         # Clear test directory
         for file in os.listdir("test"):
-            os.remove(os.path.join("test", file))
+            remove_path = os.path.join("test", file)
+            # Check if path is a file
+            if os.path.isfile(remove_path):
+                os.remove(remove_path)
 
-    p = 0x01ae3a4617c510eac63b05c06ca1493b1a22d9f300f5138f1ef3622fba094800170b5d44300000008508c00000000001
+    # p = 0x01ae3a4617c510eac63b05c06ca1493b1a22d9f300f5138f1ef3622fba094800170b5d44300000008508c00000000001
+    # a = 0
+    # b = 0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001
+
+    # Gx = 0x008848defe740a67c8fc6225bf87ff5485951e2caa9d41bb188282c8bd37cb5cd5481512ffcd394eeab9b16eb21be9ef
+    # Gy = 0x01914a69c5102eff1f674f5d30afeec4bd7fb348ca3e52d96d182ad44fb82305c2fe3d3634a9591afd82de55559c8ea6
+
+    # p = 4294967291
+    # a = 0
+    # b = 1
+
+    # Gx, Gy = (3,752522715)
+
+    p = 37
     a = 0
-    b = 0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001
+    b = 7
 
-    Gx = 0x008848defe740a67c8fc6225bf87ff5485951e2caa9d41bb188282c8bd37cb5cd5481512ffcd394eeab9b16eb21be9ef
-    Gy = 0x01914a69c5102eff1f674f5d30afeec4bd7fb348ca3e52d96d182ad44fb82305c2fe3d3634a9591afd82de55559c8ea6
+    Gx, Gy = (6, 1)
 
     # Verify that G is on the curve
     assert (Gy * Gy - (Gx * Gx * Gx + a * Gx + b)) % p == 0
@@ -83,7 +98,7 @@ def test_msm_large():
 
     msm_length = 10
 
-    # Generate random points and scalars
+    # # Generate random points and scalars
     points, scalars = generate_random_msm_data(p, a, b, Gx, Gy, msm_length)
 
     # Write points and scalars to file
@@ -109,6 +124,8 @@ def test_msm_large():
     # Verify that the result is on the curve
     assert (y * y - (x * x * x + a * x + b)) % p == 0
 
+    print(f"X: {x}, Y: {y}")
+
     print("Result is on the curve!")
     print(f"Naive algorithm took {end - start} seconds")
 
@@ -116,7 +133,7 @@ def test_msm_large():
     naive_y = y
 
     # Compute the result using Pippenger's algorithm
-    msm = PippengerMSM(p.bit_length(), 2, a, b, p)
+    msm = PippengerMSM(max(p.bit_length(), 16), 2, a, b, p)
 
     # Start timer
     start = time.time()
@@ -129,6 +146,7 @@ def test_msm_large():
     # Verify that the result is on the curve
     assert (y * y - (x * x * x + a * x + b)) % p == 0
 
+    print(f"X: {x}, Y: {y}")
     # Verify that the result is the same as the naive algorithm
     assert x == naive_x
     assert y == naive_y
@@ -144,15 +162,20 @@ def test_msm_large():
 
 def generate_random_msm_data(p, a, b, Gx, Gy, msm_length):
     # Generate random points and scalars
+    bit_length = p.bit_length()
     points = []
     scalars = []
     for _ in range(msm_length):
-        k = random.randint(1, p - 1)
-        xp, yp, zp = ecc.ec_mul_projective2(Gx, Gy, 1, k, a, b, p)
-        X, Y = ecc.homogeneous_to_affine(xp, yp, zp, p)
+        X = 0
+        Y = 0
+        k = 0
+        while X == 0 or Y == 0:
+            k = random.randint(2**(bit_length-1), 2**bit_length-1)
+            xp, yp, zp = ecc.ec_mul_projective2(Gx, Gy, 1, k, a, b, p)
+            X, Y = ecc.homogeneous_to_affine(xp, yp, zp, p)
+        
         points.append((X, Y))
-
-        scalars.append(random.randint(2**253, 2**254-1))
+        scalars.append(k)
 
     return points, scalars
 

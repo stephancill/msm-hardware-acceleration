@@ -4,10 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-cocotb = "*"
-cocotb-test = {path = "./external/cocotb-test"}
 libnum = "*"
 bitstring = "*"
+tqdm = "*"
 
 [dev-packages]
 

@@ -9,6 +9,12 @@ def ec_add_affine(x1, y1, x2, y2, a, b, p):
     """
     Add two points on an elliptic curve in affine coordinates.
     """
+    # If either pair is 0, return the other pair
+    if x1 == 0 and y1 == 0:
+        return x2, y2
+    if x2 == 0 and y2 == 0:
+        return x1, y1
+
     if x1 == x2 and y1 == y2:
         # Double
         s = (3*x1**2 + a) * libnum.invmod(2*y1, p)
@@ -20,12 +26,23 @@ def ec_add_affine(x1, y1, x2, y2, a, b, p):
     
 def ec_mul_affine(x1, y1, k, a, b, p):
     """
-    Multiply a point on an elliptic curve in affine coordinates.
+    Multiply a point on an elliptic curve in affine coordinates using double and add
     """
-    x = x1
-    y = y1
-    for _ in range(k-1):
-        x, y = ec_add_affine(x, y, x1, y1, a, b, p)
+    xt = x1
+    yt = y1
+    x = 0
+    y = 0
+    for i in range(k.bit_length()):
+        if k & (1 << i):
+            x, y = ec_add_affine(x, y, xt, yt, a, b, p)
+            # xa, ya = homogeneous_to_affine(x, y, z, p)
+            # print(f"i={i} ({hex(xa), hex(ya)})")
+        xt, yt = ec_add_affine(xt, yt, xt, yt, a, b, p)
+        # xa, ya = homogeneous_to_affine(xt, yt, zt, p)
+        # print(f"J: i={i} ({hex(xa), hex(ya)})")
+        
+        # xta, yta = homogeneous_to_affine(xt, yt, zt, p)
+        # print(f"i={i}, k={k}, x={xa}, y={ya} xt={xta}, yt={yta}")
     return x, y
 
 def ec_add_projective(x1, y1, z1, x2, y2, z2, a, b, p):
@@ -194,6 +211,70 @@ def ec_mul_projective2(x1, y1, z1, k, a, b, p):
         # print(f"i={i}, k={k}, x={xa}, y={ya} xt={xta}, yt={yta}")
     
     return x, y, z
+
+def ec_mul_projective3(x1, y1, z1, k, a, b, p):
+    """
+    Compute multiplication using sliding window method
+    Q ← 0
+    for i from m downto 0 do
+        if di = 0 then
+            Q ← point_double(Q)
+        else 
+            t ← extract j (up to w − 1) additional bits from d (including di)
+            i ← i − j
+            if j < w then
+                Perform double-and-add using t 
+                return Q
+            else 
+                Q ← point_double_repeat(Q, w)
+                Q ← point_add(Q, tP)
+    return Q
+    """
+
+    x = 0
+    y = 1
+    z = 0
+
+    # sliding window method
+    w = 4
+    m = k.bit_length()
+
+    # Precomputation of all possible values of tP where t = 0, 1, ..., 2^w - 1
+    tP = []
+    for i in range(2**w):
+        # print(f"Calculating tP for i={bin(i)}")
+        tP.append(ec_mul_projective(x1, y1, z1, i, a, b, p))
+    
+    i = m
+    # print(f"Binary k = {bin(k)}, length={m}")
+
+    while i > 0:
+        di = k & (1 << (i-1))
+        if di == 0:
+            x, y, z = ec_dbl_projective(x, y, z, a, b, p)
+            i -= 1
+        else:
+            # Extract j (up to w − 1) additional bits from d (including di)
+            j = min(w, i)
+            mask = (((2**j-1) << (i-j)))
+            t = (k & mask) >> (i-j)
+            i -= j
+            # if j < w:
+            #     print("hello", bin(t))
+            #     # Perform double-and-add using t
+            #     for _ in range(j):
+            #         x, y, z = ec_dbl_projective(x, y, z, a, b, p)
+            #     x, y, z = ec_add_projective(x, y, z, tP[t][0], tP[t][1], tP[t][2], a, b, p)
+            #     return x, y, z
+            # else:
+            for _ in range(j):
+                x, y, z = ec_dbl_projective(x, y, z, a, b, p)
+            # print(f"Looking up tP for t={bin(t)}")
+            tPx, tPy, tPz = tP[t]
+            x, y, z = ec_add_projective(x, y, z, tPx, tPy, tPz, a, b, p)
+    
+    return x, y, z
+
 
 def homogeneous_to_affine(x, y, z, p):
     """

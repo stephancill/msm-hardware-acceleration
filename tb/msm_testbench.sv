@@ -6,7 +6,7 @@ timeunit 10ns;	// Half clock cycle at 50 MHz
 			// This is the amount of time represented by #1
 timeprecision 1ns;
 
-localparam MSM_LENGTH = 10;
+localparam MSM_LENGTH = 1000;
 
 logic clk, Reset;
 logic [P_WIDTH-1:0] Rx, Ry;

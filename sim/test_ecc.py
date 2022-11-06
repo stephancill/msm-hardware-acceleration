@@ -193,12 +193,24 @@ def generate_point_add_test_case_multiple():
         for file in os.listdir(test_path):
             os.remove(os.path.join(test_path, file))
 
-    p = 0x01ae3a4617c510eac63b05c06ca1493b1a22d9f300f5138f1ef3622fba094800170b5d44300000008508c00000000001
-    a = 0
-    b = 0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001
+    # ---- Large parameters ----
+    # p = 0x01ae3a4617c510eac63b05c06ca1493b1a22d9f300f5138f1ef3622fba094800170b5d44300000008508c00000000001
+    # a = 0
+    # b = 0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001
+    # Gx = 0x008848defe740a67c8fc6225bf87ff5485951e2caa9d41bb188282c8bd37cb5cd5481512ffcd394eeab9b16eb21be9ef
+    # Gy = 0x01914a69c5102eff1f674f5d30afeec4bd7fb348ca3e52d96d182ad44fb82305c2fe3d3634a9591afd82de55559c8ea6
 
-    Gx = 0x008848defe740a67c8fc6225bf87ff5485951e2caa9d41bb188282c8bd37cb5cd5481512ffcd394eeab9b16eb21be9ef
-    Gy = 0x01914a69c5102eff1f674f5d30afeec4bd7fb348ca3e52d96d182ad44fb82305c2fe3d3634a9591afd82de55559c8ea6
+    # secp256k1 parameters
+    p = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f
+    a = 0
+    b = 7
+    Gx, Gy = (0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798, 0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8)
+
+    # ---- Small parameters ----
+    # p = 37
+    # a = 0
+    # b = 7
+    # Gx, Gy = (6, 1)
 
     length = 100
 
@@ -210,12 +222,21 @@ def generate_point_add_test_case_multiple():
         X1, Y1 = ecc.homogeneous_to_affine(xp, yp, zp, p)
 
         k = random.randint(1, p - 1)
-        xp, yp, zp = ecc.ec_mul_projective2(Gx, Gy, 1, k, a, b, p)
-        X2, Y2 = ecc.homogeneous_to_affine(xp, yp, zp, p)
+        xq, yq, zq = ecc.ec_mul_projective2(Gx, Gy, 1, k, a, b, p)
+        X2, Y2 = ecc.homogeneous_to_affine(xq, yq, zq, p)
+        while X1 == X2 and Y1 == Y2:
+            k = random.randint(1, p - 1)
+            xq, yq, zq = ecc.ec_mul_projective2(Gx, Gy, 1, k, a, b, p)
+            X2, Y2 = ecc.homogeneous_to_affine(xq, yq, zq, p)
+
+        if X1 == X2 and Y1 == Y2:
+            print("Duplicate points!")
 
         # Add the two points
-        xp, yp, zp = ecc.ec_add_projective(X1, Y1, 1, X2, Y2, 1, a, b, p)
-        X3, Y3 = ecc.homogeneous_to_affine(xp, yp, zp, p)
+        xr, yr, zr = ecc.ec_add_projective(xp, yp, zp, xq, yq, zq, a, b, p)
+        X3, Y3 = ecc.homogeneous_to_affine(xr, yr, zr, p)
+
+        print(f"P1({hex(X1)}, {hex(Y1)}) + P2({hex(X2)}, {hex(Y2)}) = ({hex(X3)}, {hex(Y3)})")
 
         test_cases.append((X1, Y1, X2, Y2, X3, Y3))
 
@@ -292,6 +313,42 @@ def test_adding_edge_case():
 
     print(f"P = ({hex(X)}, {hex(Y)})")
 
+def test_sliding_window():
+    p = 0x01ae3a4617c510eac63b05c06ca1493b1a22d9f300f5138f1ef3622fba094800170b5d44300000008508c00000000001
+    a = 0
+    b = 0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001
+
+    Gx = 0x008848defe740a67c8fc6225bf87ff5485951e2caa9d41bb188282c8bd37cb5cd5481512ffcd394eeab9b16eb21be9ef
+    Gy = 0x01914a69c5102eff1f674f5d30afeec4bd7fb348ca3e52d96d182ad44fb82305c2fe3d3634a9591afd82de55559c8ea6
+
+    # k = 0x3b90f1f8dc6b19b59ca39e6aa82bcd0d53376d493c6ac111fe6686d14192f6d6
+    k = random.randint(2**253, 2**254-1)
+
+    # Multiply the point by k
+    xp, yp, zp = ecc.ec_mul_projective3(Gx, Gy, 1, k, a, b, p)
+    kX, kY = ecc.homogeneous_to_affine(xp, yp, zp, p)
+
+    # Multiply using reference algorithm
+    xp, yp, zp = ecc.ec_mul_projective2(Gx, Gy, 1, k, a, b, p)
+    kX2, kY2 = ecc.homogeneous_to_affine(xp, yp, zp, p)
+
+    # Check that results match
+    assert kX == kX2
+    assert kY == kY2
+
+    # Verify that the point is on the curve
+    assert (kY ** 2 - kX ** 3 - a * kX - b) % p == 0
+
+    # Print out the test case
+    print(f"P = ({hex(Gx)}, {hex(Gy)})")
+    print(f"k = {hex(k)}")
+    print(f"kP = ({hex(kX)}, {hex(kY)})")
+
+    # Assert kP = (0xe195836abff608bdc9f44529e31c5f0fec56d3ec60898894532bbe31b5626a6c543a901dd64b498674c9b1d413a76e, 0xa0acc5737037be38aeedc80ab62b7389ca50353f69890a73897933f8e09aa81bc753ef50d4376d834c0e85bddf6041)
+    # assert kX == 0xe195836abff608bdc9f44529e31c5f0fec56d3ec60898894532bbe31b5626a6c543a901dd64b498674c9b1d413a76e
+    # assert kY == 0xa0acc5737037be38aeedc80ab62b7389ca50353f69890a73897933f8e09aa81bc753ef50d4376d834c0e85bddf6041
+
+
 if __name__ == "__main__":
     # test_ec_add_affine()
     # test_ec_add_projective()
@@ -301,6 +358,6 @@ if __name__ == "__main__":
     # test_ec_mul_projective2()
     # generate_point_add_test_case()
     # generate_point_multiplication_test_case()
-    # generate_point_add_test_case_multiple()
+    generate_point_add_test_case_multiple()
     # test_point_double()
-    test_adding_edge_case()
+    # test_sliding_window()

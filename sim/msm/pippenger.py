@@ -3,8 +3,8 @@ from .base import BaseMSM
 import math
 
 class PippengerMSM(BaseMSM):
-    def __init__(self, scalar_size, bucket_size, a, b, p):
-        super().__init__(a, b, p)
+    def __init__(self, scalar_size, bucket_size, a, b, p, mul_algorithm=ecc.ec_mul_projective2):
+        super().__init__(a, b, p, mul_algorithm)
         self.scalar_size = scalar_size # b
         self.c = bucket_size # number of bits in the partitioned scalars
 

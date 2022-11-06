@@ -11,34 +11,34 @@ module ModMul (
 
   // Option 1:
 
-  logic mul_done, reduction_done;
-  logic [2*P_WIDTH-1:0] ab;
+  // logic mul_done, reduction_done;
+  // logic [2*P_WIDTH-1:0] ab;
 
-  assign done = mul_done & reduction_done;
+  // assign done = mul_done & reduction_done;
 
-  ModReductionAdapter u_mod_reduction (
-      .clk(clk),
-      .reset(reset | ~mul_done),
-      .a(ab),
-      .done(reduction_done),
-      .r(r)
-  );
+  // ModReductionAdapter u_mod_reduction (
+  //     .clk(clk),
+  //     .reset(reset | ~mul_done),
+  //     .a(ab),
+  //     .done(reduction_done),
+  //     .r(r)
+  // );
 
-  MultiplierAdapter #(
-    .width(P_WIDTH)
-  ) u_m1 (
-    .clk(clk),
-    .reset(reset),
-    .enable(enable),
-    .a(a),
-    .b(b),
-    .ab(ab),
-    .done(mul_done)
-  );
+  // MultiplierAdapter #(
+  //   .width(P_WIDTH)
+  // ) u_m1 (
+  //   .clk(clk),
+  //   .reset(reset),
+  //   .enable(enable),
+  //   .a(a),
+  //   .b(b),
+  //   .ab(ab),
+  //   .done(mul_done)
+  // );
 
   // -------------------------------------------------
 
   // Option 2:
-  // multiplier mult0(.clk(clk), .Reset(reset), .Done(done), .product(r), .*);
+  multiplier mult0(.clk(clk), .Reset(reset), .Done(done), .product(r), .*);
 
 endmodule

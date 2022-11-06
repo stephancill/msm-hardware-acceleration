@@ -74,7 +74,7 @@ logic  [P_WIDTH-1:0]    r_ref, r;
 logic [P_WIDTH*2-1:0] ab, ab_ref;
 assign ab_ref = a * b;
 
-logic   clk, reset, i_enable, done;
+logic   clk, reset, enable, done;
 
 initial begin
     clk = 1'b1;
@@ -86,16 +86,17 @@ initial begin
 end
 
 initial begin
-  i_enable = 1'b0;
+  enable = 1'b0;
   #(CLK_PERIOD*5);
-  a = 377'h1647170e013bf53a7b050468f43383b17361703bef0431b3f0f3ddad4af519168f4af9b29e96740671f4fbb2b93eb11;
-  b = 377'h144b5478f0886377ee7fe272cd4ca5a12f1e38816016588cffe3240b0776a00199763223e90b4b30d4f21c3d098f416;
-  
+  // a = 377'h1647170e013bf53a7b050468f43383b17361703bef0431b3f0f3ddad4af519168f4af9b29e96740671f4fbb2b93eb11;
+  // b = 377'h144b5478f0886377ee7fe272cd4ca5a12f1e38816016588cffe3240b0776a00199763223e90b4b30d4f21c3d098f416;
+  a = 256'ha061fedbd0f036687a3b46fadcfb7bc7a76ed8ea6dab88b26f1408590510cc1e;
+  b = 256'hdb26c704eefedca6f22c27666c22ed58703bcc4f56fd507907d37b085d79e091;
   #CLK_PERIOD;
   reset = 1'b1;
   #CLK_PERIOD;
   reset = 1'b0;
-  i_enable = 1'b1;
+  enable = 1'b1;
 
  forever begin
    if (done) begin
@@ -120,6 +121,7 @@ BoothWrapper #(
     .ab(ab),
     .clk(clk),
     .reset(reset),
+    .enable(enable),
     .done(done)
     );
 

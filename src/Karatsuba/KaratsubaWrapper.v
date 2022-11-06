@@ -1,6 +1,6 @@
 
 module KaratsubaWrapper #(
-  parameter width = 128 // width of the output
+  parameter width = 377 // width of the output
 ) (
   input clk,
   input reset,

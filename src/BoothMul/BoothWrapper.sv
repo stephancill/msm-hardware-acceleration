@@ -12,7 +12,8 @@ module BoothWrapper #(
   output logic done
 );
 
-localparam padding = 2**$clog2(width) - width;
+localparam localwidth = 2**$clog2(width) - width == 0 ? width+1 : width;
+localparam padding = 2**$clog2(localwidth) - width;
 
 logic enabled, ld;
 
@@ -33,7 +34,7 @@ always @(posedge clk) begin
 end
 
 Booth_Multiplier    #(
-    .pN($clog2(width))
+    .pN($clog2(localwidth))
   ) u_booth (
     .Rst(reset), 
     .Clk(clk), 

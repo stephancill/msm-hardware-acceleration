@@ -3,16 +3,11 @@
 ## References
 
 Elliptic curve boilerplate - https://github.com/ljhsiun2/EllipticCurves_SystemVerilog
+Karatsuba - https://github.com/JC-S/Karatsuba_multiplier_HDL/
+Booth - https://github.com/MorrisMA/Booth_Multipliers
 
-## Testing
+## Development
 
-```
-cd tb/ModMul
-WAVES=1 SIM=icarus pipenv run pytest -o log_cli=True test_modmul.py
-```
-
-## Directory structure references
-
-- https://github.com/nmk456/fpga-sdr
-- https://github.com/cocotb/cocotb-bus
-- https://github.com/alexforencich/cocotbext-pcie
+1. Create a new Vivado project
+2. Add all the sources from the `src` directory
+3. Create a simulation set for each testbench in the `tb` directory

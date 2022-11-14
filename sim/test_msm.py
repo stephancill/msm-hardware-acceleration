@@ -168,11 +168,11 @@ def benchmark_msm_pippenger():
 def benchmark_msm_multiplication():
 
     # ----- Large test -----
-    p = 0x01ae3a4617c510eac63b05c06ca1493b1a22d9f300f5138f1ef3622fba094800170b5d44300000008508c00000000001
-    a = 0
-    b = 0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001
-    Gx = 0x008848defe740a67c8fc6225bf87ff5485951e2caa9d41bb188282c8bd37cb5cd5481512ffcd394eeab9b16eb21be9ef
-    Gy = 0x01914a69c5102eff1f674f5d30afeec4bd7fb348ca3e52d96d182ad44fb82305c2fe3d3634a9591afd82de55559c8ea6
+    # p = 0x01ae3a4617c510eac63b05c06ca1493b1a22d9f300f5138f1ef3622fba094800170b5d44300000008508c00000000001
+    # a = 0
+    # b = 0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001
+    # Gx = 0x008848defe740a67c8fc6225bf87ff5485951e2caa9d41bb188282c8bd37cb5cd5481512ffcd394eeab9b16eb21be9ef
+    # Gy = 0x01914a69c5102eff1f674f5d30afeec4bd7fb348ca3e52d96d182ad44fb82305c2fe3d3634a9591afd82de55559c8ea6
 
     # ----- Medium test -----
     # p = 4294967291
@@ -181,17 +181,17 @@ def benchmark_msm_multiplication():
     # Gx, Gy = (3,752522715)
 
     # ----- Small test -----
-    # p = 37
-    # a = 0
-    # b = 7
-    # Gx, Gy = (6, 1)
+    p = 37
+    a = 0
+    b = 7
+    Gx, Gy = (6, 1)
 
     # Verify that G is on the curve
     assert (Gy * Gy - (Gx * Gx * Gx + a * Gx + b)) % p == 0
 
     print("Generator is on the curve!")
 
-    msm_length = 1000
+    msm_length = 100
 
     speedups = []
 

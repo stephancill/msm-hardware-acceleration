@@ -9,7 +9,7 @@ timeprecision 1ns;
 logic Clk, Reset, Done;
 logic [P_WIDTH-1:0] a, b, product;
 
-multiplier mult0(.clk(Clk), .*);
+MultiplierAdapter mult0(.clk(Clk), .*);
 
 // Toggle the clock
 // #1 means wait for a delay of 1 timeunit

@@ -27,32 +27,32 @@ logic [SCALAR_WIDTH-1:0] x_i;
 point_add                 p_add(.Reset(add_reset), .P(R_temp), .Q(R_mul_temp), .R(R_add_temp), .Done(add_done), .*);
 point_mul_double_and_add  p_mul(.Reset(mul_reset), .P(G_i), .k(x_i), .R(R_mul_temp), .Done(mul_done), .*);
 
-assign Done = counter == (length+1) && add_done && mul_done;
-assign R = R_temp;
-assign l = x[counter]
+//assign Done = counter == (length+1) && add_done && mul_done;
+//assign R = R_temp;
+//assign l = x[counter]
 
-// Clock and Reset
-always_ff @(posedge clk) begin
-  if (Reset) begin
-    Done <= 0;
-    R_temp <= inf_point;
-    counter <= 1;
-    add_reset <= 0;
-    mul_reset <= 1;
-    G_i <= G[0];
-    x_i <= x[0];
-    state <= populate_B_l_k;
-  end else begin
-    if (!Done) begin
-      case (state)
-        populate_B_l_k: begin
-          counter <= counter + 1;
-          l <= x[counter] >> ;
-        end 
-        default: 
-      endcase
-    end
-  end
-end
+//// Clock and Reset
+//always_ff @(posedge clk) begin
+//  if (Reset) begin
+//    Done <= 0;
+//    R_temp <= inf_point;
+//    counter <= 1;
+//    add_reset <= 0;
+//    mul_reset <= 1;
+//    G_i <= G[0];
+//    x_i <= x[0];
+//    state <= populate_B_l_k;
+//  end else begin
+//    if (!Done) begin
+//      case (state)
+//        populate_B_l_k: begin
+//          counter <= counter + 1;
+//          l <= x[counter] >> ;
+//        end 
+//        default: 
+//      endcase
+//    end
+//  end
+//end
 
 endmodule

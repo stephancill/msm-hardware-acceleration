@@ -11,3 +11,7 @@ Booth - https://github.com/MorrisMA/Booth_Multipliers
 1. Create a new Vivado project
 2. Add all the sources from the `src` directory
 3. Create a simulation set for each testbench in the `tb` directory
+
+## Results
+
+![Results](https://github.com/stephancill/msm-hardware-acceleration/blob/master/screenshot.png?raw=true)

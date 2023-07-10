@@ -50,28 +50,28 @@ typedef struct packed {
 // };
 
 // secp256k1 parameters
-// parameter curve_parameters_t params = '{
-//   p: 256'hfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f,
-//   n: P_WIDTH,
-//   a: 256'd0,
-//   b: 256'd7,
-// 	base_point: {
-//     256'h79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798,
-// 		256'h483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8
-//   }
-// };
-
-// BLS12-377
 parameter curve_parameters_t params = '{
-  p: 377'h01ae3a4617c510eac63b05c06ca1493b1a22d9f300f5138f1ef3622fba094800170b5d44300000008508c00000000001,
+  p: 256'hfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f,
   n: P_WIDTH,
-  a: 377'd0,
-  b: 377'd1,
-	base_point:'{
-    x: 377'h008848defe740a67c8fc6225bf87ff5485951e2caa9d41bb188282c8bd37cb5cd5481512ffcd394eeab9b16eb21be9ef, 
-    y: 377'h01914a69c5102eff1f674f5d30afeec4bd7fb348ca3e52d96d182ad44fb82305c2fe3d3634a9591afd82de55559c8ea6
+  a: 256'd0,
+  b: 256'd7,
+	base_point: {
+    256'h79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798,
+		256'h483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8
   }
 };
+
+// BLS12-377
+// parameter curve_parameters_t params = '{
+//   p: 377'h01ae3a4617c510eac63b05c06ca1493b1a22d9f300f5138f1ef3622fba094800170b5d44300000008508c00000000001,
+//   n: P_WIDTH,
+//   a: 377'd0,
+//   b: 377'd1,
+// 	base_point:'{
+//     x: 377'h008848defe740a67c8fc6225bf87ff5485951e2caa9d41bb188282c8bd37cb5cd5481512ffcd394eeab9b16eb21be9ef, 
+//     y: 377'h01914a69c5102eff1f674f5d30afeec4bd7fb348ca3e52d96d182ad44fb82305c2fe3d3634a9591afd82de55559c8ea6
+//   }
+// };
 
 typedef struct packed {
     logic m;            // m = 1 for secp256k1

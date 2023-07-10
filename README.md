@@ -14,4 +14,4 @@ Booth - https://github.com/MorrisMA/Booth_Multipliers
 
 ## Results
 
-![Results](https://github.com/stephancill/msm-hardware-acceleration/blob/master/screenshot.png?raw=true)
+![Results](https://github.com/stephancill/msm-hardware-acceleration/blob/master/poster.png?raw=true)
